@@ -1,0 +1,7 @@
+{
+  "name": "CostSplit",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
