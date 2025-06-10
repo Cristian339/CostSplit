@@ -1,0 +1,40 @@
+<div class="graficos-container">
+  <ion-card *ngIf="gastos.length > 0">
+    <ion-card-header>
+      <ion-card-title>Distribución por Tipo de Gasto</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="grafico-wrapper">
+        <canvas id="tipoGastoChart"></canvas>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="gastos.length > 0">
+    <ion-card-header>
+      <ion-card-title>Gastos por Mes</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="grafico-wrapper">
+        <canvas id="distribMensualChart"></canvas>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="gastos.length > 0">
+    <ion-card-header>
+      <ion-card-title>Gastos por Pagador</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="grafico-wrapper">
+        <canvas id="pagadorChart"></canvas>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <div *ngIf="gastos.length === 0" class="empty-graficos">
+    <ion-icon name="bar-chart-outline"></ion-icon>
+    <h2>No hay datos para mostrar</h2>
+    <p>Añade gastos para ver estadísticas</p>
+  </div>
+</div>
