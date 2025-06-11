@@ -1,13 +1,52 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-  {
-    path: 'home',
-    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
-  },
   {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full',
+  },
+  {
+    path: 'home',
+    loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent),
+  },
+  {
+    path: 'registro',
+    loadComponent: () => import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
+  },
+  {
+    path: 'perfil',
+    loadComponent: () => import('./features/auth/profile/profile.component').then((m) => m.ProfileComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'grupos/:idGrupo/liquidaciones',
+    loadComponent: () => import('./features/liquidaciones/liquidacion-list/liquidacion-list.component').then(m => m.LiquidacionListComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'grupos/:idGrupo/gastos/:idGasto/editar',
+    loadComponent: () => import('./features/gastos/gasto-edit/gasto-edit.component').then(m => m.GastoEditComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'informes',
+    loadComponent: () => import('./features/informes/informes.component').then(m => m.InformesComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'ayuda',
+    loadComponent: () => import('./features/ayuda/ayuda.component').then(m => m.AyudaComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: '**',
+    redirectTo: 'home',
   },
 ];

@@ -1,0 +1,37 @@
+.profile-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  ion-avatar {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 1rem;
+    border: 3px solid var(--ion-color-primary);
+  }
+
+  h1 {
+    margin: 0.5rem 0;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  p {
+    margin: 0;
+    color: var(--ion-color-medium);
+  }
+}
+
+ion-card {
+  margin-top: 1.5rem;
+}
+
+ion-button[color="danger"] {
+  margin-top: 2rem;
+}
