@@ -1,0 +1,33 @@
+<ion-list>
+  <ion-list-header>
+    <ion-label>Notificaciones</ion-label>
+    <ion-button fill="clear" size="small" (click)="marcarTodasComoLeidas()">
+      Marcar todas como leídas
+    </ion-button>
+  </ion-list-header>
+  
+  <ion-item *ngFor="let notificacion of notificaciones" 
+            [routerLink]="notificacion.enlace" 
+            [class.unread]="!notificacion.leida">
+    <ion-icon [name]="getIcono(notificacion.tipo)" 
+              [color]="getColor(notificacion.tipo)" 
+              slot="start"></ion-icon>
+    <ion-label>
+      <p class="notification-message">{{ notificacion.mensaje }}</p>
+      <p class="notification-time">{{ notificacion.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
+    </ion-label>
+    <ion-button fill="clear" 
+                size="small" 
+                slot="end" 
+                *ngIf="!notificacion.leida"
+                (click)="marcarComoLeida(notificacion.id, $event)">
+      <ion-icon name="checkmark-outline"></ion-icon>
+    </ion-button>
+  </ion-item>
+  
+  <ion-item *ngIf="notificaciones.length === 0">
+    <ion-label class="ion-text-center">
+      No tienes notificaciones
+    </ion-label>
+  </ion-item>
+</ion-list>

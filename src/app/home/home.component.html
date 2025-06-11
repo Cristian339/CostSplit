@@ -1,0 +1,133 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>CostSplitBD</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando...</p>
+  </div>
+  
+  <div *ngIf="!isLoading">
+    <!-- Sección de bienvenida -->
+    <div class="welcome-section">
+      <h1>¡Bienvenido a CostSplitBD!</h1>
+      <p>Gestiona tus gastos compartidos de manera fácil y rápida.</p>
+    </div>
+    
+    <!-- Grupos Recientes -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Mis Grupos</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list *ngIf="gruposRecientes.length > 0">
+          <ion-item *ngFor="let grupo of gruposRecientes" [routerLink]="['/grupos', grupo.id]" detail="true">
+            <ion-avatar slot="start">
+              <img [src]="grupo.imagenUrl || 'assets/default-group.png'" alt="Grupo">
+            </ion-avatar>
+            <ion-label>
+              <h2>{{ grupo.nombre }}</h2>
+              <p>{{ grupo.descripcion }}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item lines="none" [routerLink]="['/grupos']" detail="true">
+            <ion-label class="ion-text-center">Ver todos los grupos</ion-label>
+          </ion-item>
+        </ion-list>
+        
+        <div *ngIf="gruposRecientes.length === 0" class="empty-state">
+          <p>No tienes grupos aún.</p>
+          <ion-button [routerLink]="['/grupos/nuevo']" expand="block">
+            Crear tu primer grupo
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+    
+    <!-- Gastos Recientes -->
+    <ion-card *ngIf="ultimosGastos.length > 0">
+      <ion-card-header>
+        <ion-card-title>Últimos Gastos</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let gasto of ultimosGastos">
+            <ion-icon [name]="getIconoTipoGasto(gasto.tipoGasto)" slot="start"></ion-icon>
+            <ion-label>
+              <h2>{{ gasto.descripcion }}</h2>
+              <p>{{ gasto.fecha | date:'dd/MM/yyyy' }}</p>
+            </ion-label>
+            <ion-note slot="end" color="primary">{{ gasto.montoTotal | currency:gasto.divisa }}</ion-note>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+    
+    <!-- Balances Pendientes -->
+    <ion-card *ngIf="balancesPendientes.length > 0">
+      <ion-card-header>
+        <ion-card-title>Balances Pendientes</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let balance of balancesPendientes">
+            <ion-label>
+              <h2>{{ balance.usuarioNombre }}</h2>
+              <p>Pendiente de pago</p>
+            </ion-label>
+            <ion-note slot="end" color="danger">{{ balance.importe | currency:'EUR' }}</ion-note>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+    
+    <!-- Accesos Rápidos -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Accesos Rápidos</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <ion-button expand="block" [routerLink]="['/grupos/nuevo']">
+                <ion-icon name="people" slot="start"></ion-icon>
+                Nuevo Grupo
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button expand="block" [routerLink]="['/grupos']">
+                <ion-icon name="list" slot="start"></ion-icon>
+                Ver Grupos
+              </ion-button>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <ion-button expand="block" color="success" [routerLink]="['/perfil']">
+                <ion-icon name="person" slot="start"></ion-icon>
+                Mi Perfil
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button expand="block" color="tertiary">
+                <ion-icon name="help-circle" slot="start"></ion-icon>
+                Ayuda
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
