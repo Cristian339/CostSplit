@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Ayuda</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <h1>Ayuda y soporte</h1>
+  
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Guía rápida</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>
+        CostSplitBD te ayuda a gestionar gastos compartidos de manera sencilla.
+        Con nuestra aplicación podrás:
+      </p>
+      <ul>
+        <li>Crear grupos para organizar tus gastos</li>
+        <li>Registrar gastos y repartirlos entre los participantes</li>
+        <li>Ver quién debe dinero y a quién</li>
+        <li>Registrar liquidaciones de deudas</li>
+      </ul>
+    </ion-card-content>
+  </ion-card>
+  
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Conceptos Principales</ion-label>
+    </ion-list-header>
+    
+    <ion-item *ngFor="let seccion of secciones">
+      <ion-icon [name]="seccion.icono" slot="start" color="primary"></ion-icon>
+      <ion-label>
+        <h2>{{ seccion.titulo }}</h2>
+        <p>{{ seccion.contenido }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Preguntas Frecuentes</ion-label>
+    </ion-list-header>
+    
+    <ion-accordion-group>
+      <ion-accordion *ngFor="let faq of faqs; let i = index" [value]="'faq-' + i">
+        <ion-item slot="header">
+          <ion-label>{{ faq.pregunta }}</ion-label>
+        </ion-item>
+        <div slot="content" class="ion-padding">
+          <p>{{ faq.respuesta }}</p>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </ion-list>
+  
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>¿Necesitas más ayuda?</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>
+        Si tienes dudas o problemas adicionales, no dudes en contactar con nuestro
+        equipo de soporte en <a href="mailto:soporte@costsplitbd.com">soporte@costsplitbd.com</a>
+      </p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="'/grupos/' + grupoId"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Liquidaciones</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="crearLiquidacion()">
+        <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  
+  <app-loading *ngIf="isLoading"></app-loading>
+  <app-error-message *ngIf="errorMessage" [message]="errorMessage" (retry)="cargarLiquidaciones()"></app-error-message>
+  
+  <ng-container *ngIf="!isLoading && !errorMessage">
+    <div *ngIf="liquidaciones.length === 0" class="empty-state">
+      <ion-icon name="cash-outline" class="empty-icon"></ion-icon>
+      <h2>No hay liquidaciones</h2>
+      <p>Crea tu primera liquidación para saldar cuentas</p>
+      <ion-button expand="block" (click)="crearLiquidacion()">
+        Nueva Liquidación
+      </ion-button>
+    </div>
+    
+    <ion-list *ngIf="liquidaciones.length > 0">
+      <ion-list-header>
+        <ion-label>Liquidaciones Pendientes</ion-label>
+      </ion-list-header>
+      
+      <ion-item-sliding *ngFor="let liquidacion of liquidaciones">
+        <ion-item>
+          <ion-label>
+            <h2>{{ liquidacion.pagadorNombre }} → {{ liquidacion.receptorNombre }}</h2>
+            <p>{{ liquidacion.fecha | date:'dd/MM/yyyy' }}</p>
+          </ion-label>
+          <ion-badge slot="end" [color]="getColorEstado(liquidacion.estado)">
+            {{ liquidacion.importe | currency:'EUR' }}
+          </ion-badge>
+        </ion-item>
+        
+        <ion-item-options side="end" *ngIf="liquidacion.estado === EstadoLiquidacion.PENDIENTE">
+          <ion-item-option color="success" (click)="cambiarEstado(liquidacion, EstadoLiquidacion.CONFIRMADA)">
+            <ion-icon slot="icon-only" name="checkmark"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger" (click)="cambiarEstado(liquidacion, EstadoLiquidacion.RECHAZADA)">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+  </ng-container>
+</ion-content>
