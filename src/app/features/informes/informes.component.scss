@@ -1,0 +1,17 @@
+.ion-spinner-centered {
+  display: block;
+  margin: 50px auto;
+  width: 48px;
+  height: 48px;
+}
+
+.resultados-summary {
+  margin-bottom: 15px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--ion-color-light);
+  
+  strong {
+    font-size: 1.2rem;
+    color: var(--ion-color-primary);
+  }
+}

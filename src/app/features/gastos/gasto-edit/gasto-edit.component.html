@@ -1,0 +1,101 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="'/grupos/' + grupoId + '/gastos/' + gastoId"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Editar Gasto</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="gastoForm" (ngSubmit)="onSubmit()">
+    <ion-list>
+      <!-- Descripción -->
+      <ion-item>
+        <ion-label position="floating">Descripción *</ion-label>
+        <ion-input formControlName="descripcion" type="text"></ion-input>
+      </ion-item>
+      <div class="error-message" *ngIf="gastoForm.get('descripcion')?.invalid && gastoForm.get('descripcion')?.touched">
+        <span *ngIf="gastoForm.get('descripcion')?.errors?.['required']">La descripción es requerida</span>
+      </div>
+      
+      <!-- Monto total -->
+      <ion-item>
+        <ion-label position="floating">Monto total *</ion-label>
+        <ion-input formControlName="montoTotal" type="number" step="0.01"></ion-input>
+      </ion-item>
+      <div class="error-message" *ngIf="gastoForm.get('montoTotal')?.invalid && gastoForm.get('montoTotal')?.touched">
+        <span *ngIf="gastoForm.get('montoTotal')?.errors?.['required']">El monto es requerido</span>
+        <span *ngIf="gastoForm.get('montoTotal')?.errors?.['min']">El monto debe ser mayor que 0</span>
+      </div>
+      
+      <!-- Fecha -->
+      <ion-item>
+        <ion-label>Fecha *</ion-label>
+        <ion-datetime-button datetime="datetime"></ion-datetime-button>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime id="datetime" formControlName="fecha" presentation="date"></ion-datetime>
+          </ng-template>
+        </ion-modal>
+      </ion-item>
+      
+      <!-- Pagador -->
+      <ion-item>
+        <ion-label>Pagador *</ion-label>
+        <ion-select formControlName="idPagador" placeholder="Seleccione pagador">
+          <ion-select-option *ngFor="let usuario of participantes" [value]="usuario.id">
+            {{ usuario.nombre }} {{ usuario.apellido }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+      
+      <!-- Tipo de gasto -->
+      <ion-item>
+        <ion-label>Tipo de gasto *</ion-label>
+        <ion-select formControlName="tipoGasto">
+          <ion-select-option *ngFor="let tipo of tiposGasto" [value]="tipo">
+            {{ tipo }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+      
+      <!-- Método de pago -->
+      <ion-item>
+        <ion-label>Método de pago *</ion-label>
+        <ion-select formControlName="metodoPago">
+          <ion-select-option *ngFor="let metodo of metodosPago" [value]="metodo">
+            {{ metodo }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+      
+      <!-- Método de repartición -->
+      <ion-item>
+        <ion-label>Método de repartición *</ion-label>
+        <ion-select formControlName="metodoReparticion">
+          <ion-select-option *ngFor="let metodo of metodosReparticion" [value]="metodo">
+            {{ metodo }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+      
+      <!-- Divisa -->
+      <ion-item>
+        <ion-label>Divisa *</ion-label>
+        <ion-select formControlName="divisa">
+          <ion-select-option *ngFor="let divisa of divisas" [value]="divisa">
+            {{ divisa }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+    
+    <div class="ion-margin-top">
+      <ion-button type="submit" expand="block" [disabled]="gastoForm.invalid || isLoading">
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+        <span *ngIf="!isLoading">Actualizar Gasto</span>
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

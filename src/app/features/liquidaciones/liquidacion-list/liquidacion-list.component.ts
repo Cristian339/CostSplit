@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController, AlertController } from '@ionic/angular';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LiquidacionService } from '../../../services/liquidacion.service';
 import { LiquidacionDTO } from '../../../models/liquidacion.model';
 import { EstadoLiquidacion } from '../../../models/enums';
@@ -54,7 +54,13 @@ export class LiquidacionListComponent implements OnInit {
 
     this.liquidacionService.obtenerLiquidacionesPorGrupo(this.grupoId).subscribe({
       next: (liquidaciones) => {
-        this.liquidaciones = liquidaciones;
+        // Aseguramos que los datos cumplen con el modelo requerido
+        this.liquidaciones = liquidaciones.map(liq => ({
+          ...liq,
+          pagadorId: liq.pagadorId || 0,
+          receptorId: liq.receptorId || 0,
+          importe: liq.importe || 0
+        }));
         this.isLoading = false;
       },
       error: (error) => {
@@ -81,10 +87,16 @@ export class LiquidacionListComponent implements OnInit {
 
             this.liquidacionService.actualizarEstadoLiquidacion(liquidacion.id!, nuevoEstado).subscribe({
               next: (liquidacionActualizada) => {
-                // Actualizar la liquidación en la lista
+                // Actualizar la liquidación en la lista con valores completos
                 const index = this.liquidaciones.findIndex(l => l.id === liquidacion.id);
                 if (index !== -1) {
-                  this.liquidaciones[index] = liquidacionActualizada;
+                  // Añadimos los campos requeridos si no existen
+                  this.liquidaciones[index] = {
+                    ...liquidacionActualizada,
+                    pagadorId: liquidacionActualizada.pagadorId || liquidacion.pagadorId,
+                    receptorId: liquidacionActualizada.receptorId || liquidacion.receptorId,
+                    importe: liquidacionActualizada.importe || liquidacion.importe
+                  };
                 }
 
                 this.isLoading = false;

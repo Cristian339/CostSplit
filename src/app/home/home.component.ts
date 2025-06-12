@@ -9,6 +9,7 @@ import { BalanceService } from '../services/balance.service';
 import { GrupoDTO } from '../models/grupo.model';
 import { GastoDTO } from '../models/gasto.model';
 import { BalanceDTO } from '../models/balance.model';
+import { TipoGasto, MetodoPago } from '../models/enums';
 
 @Component({
   selector: 'app-home',
@@ -22,39 +23,48 @@ export class HomeComponent implements OnInit {
   ultimosGastos: GastoDTO[] = [];
   balancesPendientes: BalanceDTO[] = [];
   isLoading = true;
-  
+
   constructor(
     private authService: AuthService,
     private grupoService: GrupoService,
     private gastoService: GastoService,
     private balanceService: BalanceService
   ) {}
-  
+
   ngOnInit() {
     this.cargarDatos();
   }
-  
+
   cargarDatos() {
     this.isLoading = true;
-    
+
     // Obtener el usuario actual
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser?.id) {
       this.isLoading = false;
       return;
     }
-    
+
     // Cargar los grupos del usuario
     this.grupoService.listarGrupos(currentUser.id).subscribe({
       next: (grupos) => {
-        this.gruposRecientes = grupos.slice(0, 3); // Solo mostramos los 3 más recientes
-        
+        // Asegurar que descripcion es siempre string
+        this.gruposRecientes = grupos.slice(0, 3).map(grupo => ({
+          ...grupo,
+          descripcion: grupo.descripcion || ''
+        }));
+
         // Si hay grupos, cargamos los gastos recientes del primer grupo
         if (grupos.length > 0) {
           this.gastoService.listarGastosPorGrupo(grupos[0].id!).subscribe({
             next: (gastos) => {
-              this.ultimosGastos = gastos.slice(0, 5); // Solo 5 gastos más recientes
-              
+              // Convertir string a los tipos enum correspondientes
+              this.ultimosGastos = gastos.slice(0, 5).map(gasto => ({
+                ...gasto,
+                tipoGasto: gasto.tipoGasto as unknown as TipoGasto,
+                metodoPago: gasto.metodoPago as unknown as MetodoPago
+              }));
+
               // Cargar los balances del primer grupo
               this.balanceService.obtenerBalancesPorGrupo(grupos[0].id!).subscribe({
                 next: (balances) => {
@@ -82,21 +92,21 @@ export class HomeComponent implements OnInit {
       }
     });
   }
-  
+
   doRefresh(event: any) {
     this.cargarDatos();
     setTimeout(() => {
       event.target.complete();
     }, 1000);
   }
-  
+
   getIconoTipoGasto(tipo: string): string {
     switch(tipo) {
       case 'COMIDA': return 'restaurant';
       case 'TRANSPORTE': return 'car';
       case 'ALOJAMIENTO': return 'bed';
       case 'OCIO': return 'game-controller';
-      case 'OTROS': 
+      case 'OTROS':
       default: return 'pricetag';
     }
   }

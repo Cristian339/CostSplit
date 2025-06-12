@@ -1,0 +1,100 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Informes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Generar Informe</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form [formGroup]="filtroForm">
+        <ion-item>
+          <ion-label>Grupo</ion-label>
+          <ion-select formControlName="grupoId" placeholder="Selecciona un grupo">
+            <ion-select-option [value]="">-- Todos los grupos --</ion-select-option>
+            <ion-select-option *ngFor="let grupo of grupos" [value]="grupo.id">
+              {{ grupo.nombre }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+        
+        <ion-item>
+          <ion-label>Desde</ion-label>
+          <ion-input type="date" formControlName="fechaDesde"></ion-input>
+        </ion-item>
+        
+        <ion-item>
+          <ion-label>Hasta</ion-label>
+          <ion-input type="date" formControlName="fechaHasta"></ion-input>
+        </ion-item>
+        
+        <ion-item>
+          <ion-label>Tipo de gasto</ion-label>
+          <ion-select formControlName="tipoGasto" placeholder="Todos">
+            <ion-select-option [value]="">-- Todos --</ion-select-option>
+            <ion-select-option *ngFor="let tipo of tiposGasto" [value]="tipo">
+              {{ tipo }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+        
+        <div class="ion-padding-top ion-text-center">
+          <ion-button expand="block" (click)="aplicarFiltros()">
+            <ion-icon name="search-outline" slot="start"></ion-icon>
+            Aplicar Filtros
+          </ion-button>
+          <ion-button expand="block" fill="outline" (click)="resetFiltros()">
+            <ion-icon name="refresh-outline" slot="start"></ion-icon>
+            Limpiar Filtros
+          </ion-button>
+        </div>
+      </form>
+    </ion-card-content>
+  </ion-card>
+  
+  <ion-card *ngIf="gastos.length > 0">
+    <ion-card-header>
+      <ion-card-title>Resultados</ion-card-title>
+      <ion-card-subtitle>{{ gastos.length }} gastos encontrados</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="resultados-summary">
+        <p>Total: <strong>{{ calcularTotalGastos() | currency:'EUR' }}</strong></p>
+      </div>
+      
+      <ion-list>
+        <ion-item *ngFor="let gasto of gastos">
+          <ion-label>
+            <h2>{{ gasto.descripcion }}</h2>
+            <p>{{ gasto.fecha | date:'dd/MM/yyyy' }}</p>
+          </ion-label>
+          <ion-note slot="end" color="primary">{{ gasto.montoTotal | currency:gasto.divisa }}</ion-note>
+        </ion-item>
+      </ion-list>
+      
+      <div class="ion-padding-top">
+        <ion-button expand="block" (click)="exportarCSV()">
+          <ion-icon name="download-outline" slot="start"></ion-icon>
+          Exportar a CSV
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  
+  <ion-card *ngIf="filtroForm.value.grupoId && gastos.length === 0 && !isLoading">
+    <ion-card-content>
+      <div class="ion-text-center ion-padding">
+        <ion-icon name="search-outline" color="medium" style="font-size: 48px;"></ion-icon>
+        <p>No se encontraron gastos con los filtros aplicados</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  
+  <ion-spinner *ngIf="isLoading" name="crescent" class="ion-spinner-centered"></ion-spinner>
+</ion-content>
