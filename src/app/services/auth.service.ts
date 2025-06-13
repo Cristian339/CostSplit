@@ -1,25 +1,9 @@
 import { Injectable } from '@angular/core';
-
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthService {
-
-  constructor() { }
-}
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-
-export interface Usuario {
-  id: number;
-  nombre: string;
-  email: string;
-  // Otros campos que pueda tener tu usuario
-}
-
+import { Usuario } from '../models/usuario.model';
 @Injectable({
   providedIn: 'root'
 })

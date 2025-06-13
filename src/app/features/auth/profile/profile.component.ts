@@ -39,7 +39,17 @@ export class ProfileComponent implements OnInit {
   }
 
   cargarUsuario() {
-    this.usuario = this.authService.getCurrentUser();
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) return;
+
+    // Creamos un objeto UsuarioDTO válido con valores por defecto para campos requeridos
+    this.usuario = {
+      id: currentUser.id,
+      nombre: currentUser.nombre || '',
+      apellido: currentUser.apellido || '',
+      email: currentUser.email || '',
+      urlImg: currentUser.urlImg
+    };
 
     if (this.usuario) {
       this.profileForm.patchValue({
@@ -81,10 +91,14 @@ export class ProfileComponent implements OnInit {
 
     this.isLoading = true;
 
+    if (!this.usuario) return;
+
+    // Aseguramos que todas las propiedades requeridas tengan un valor
     const usuarioActualizado: UsuarioDTO = {
-      ...this.usuario,
+      id: this.usuario.id,
       nombre: this.profileForm.value.nombre,
       apellido: this.profileForm.value.apellido,
+      email: this.usuario.email, // Mantenemos el email original
       urlImg: this.profileForm.value.urlImg
     };
 
@@ -94,6 +108,9 @@ export class ProfileComponent implements OnInit {
       this.isLoading = false;
       this.isEditing = false;
       this.profileForm.disable();
+
+      // Actualizamos el usuario local
+      this.usuario = usuarioActualizado;
 
       // En una implementación real, aquí actualizarías el usuario en el servicio de autenticación
       // Por ejemplo: this.authService.updateCurrentUser(usuarioActualizado);
@@ -107,7 +124,7 @@ export class ProfileComponent implements OnInit {
     }, 1000);
   }
 
-  async cambiarContraseña() {
+  async cambiarContrasena() {
     const alert = await this.alertController.create({
       header: 'Cambiar Contraseña',
       inputs: [

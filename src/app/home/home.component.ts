@@ -6,10 +6,11 @@ import { AuthService } from '../services/auth.service';
 import { GrupoService } from '../services/grupo.service';
 import { GastoService } from '../services/gasto.service';
 import { BalanceService } from '../services/balance.service';
-import { GrupoDTO } from '../models/grupo.model';
 import { GastoDTO } from '../models/gasto.model';
 import { BalanceDTO } from '../models/balance.model';
-import { TipoGasto, MetodoPago } from '../models/enums';
+import { GrupoDTO } from '../models/grupo.model';
+import { TipoGasto, MetodoPago, MetodoReparticion } from '../models/enums';
+import { Divisa } from '../models/divisa.model';
 
 @Component({
   selector: 'app-home',
@@ -61,8 +62,10 @@ export class HomeComponent implements OnInit {
               // Convertir string a los tipos enum correspondientes
               this.ultimosGastos = gastos.slice(0, 5).map(gasto => ({
                 ...gasto,
-                tipoGasto: gasto.tipoGasto as unknown as TipoGasto,
-                metodoPago: gasto.metodoPago as unknown as MetodoPago
+                tipoGasto: gasto.tipoGasto as TipoGasto,
+                metodoPago: gasto.metodoPago as MetodoPago,
+                metodoReparticion: gasto.metodoReparticion as MetodoReparticion,
+                divisa: Divisa[gasto.divisa as keyof typeof Divisa] // Conversión correcta a enum Divisa
               }));
 
               // Cargar los balances del primer grupo

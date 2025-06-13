@@ -1,12 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController, AlertController } from '@ionic/angular';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LiquidacionService } from '../../../services/liquidacion.service';
 import { LiquidacionDTO } from '../../../models/liquidacion.model';
 import { EstadoLiquidacion } from '../../../models/enums';
 import { LoadingComponent } from '../../../components/loading/loading.component';
 import { ErrorMessageComponent } from '../../../components/error-message/error-message.component';
+
+interface LiquidacionExtendida extends LiquidacionDTO {
+  pagadorId: number;
+  receptorId: number;
+  importe: number;
+  pagadorNombre?: string;
+  receptorNombre?: string;
+}
 
 @Component({
   selector: 'app-liquidacion-list',
@@ -15,13 +23,13 @@ import { ErrorMessageComponent } from '../../../components/error-message/error-m
     CommonModule,
     IonicModule,
     LoadingComponent,
-    ErrorMessageComponent
+    ErrorMessageComponent,
   ],
   templateUrl: './liquidacion-list.component.html',
   styleUrls: ['./liquidacion-list.component.scss']
 })
 export class LiquidacionListComponent implements OnInit {
-  liquidaciones: LiquidacionDTO[] = [];
+  liquidaciones: LiquidacionExtendida[] = [];
   grupoId: number = 0;
   isLoading = false;
   errorMessage = '';
@@ -53,17 +61,21 @@ export class LiquidacionListComponent implements OnInit {
     this.errorMessage = '';
 
     this.liquidacionService.obtenerLiquidacionesPorGrupo(this.grupoId).subscribe({
-      next: (liquidaciones) => {
-        // Aseguramos que los datos cumplen con el modelo requerido
+      next: (liquidaciones: any[]) => {
+        // Convertimos las liquidaciones del servicio a nuestro modelo extendido
         this.liquidaciones = liquidaciones.map(liq => ({
           ...liq,
-          pagadorId: liq.pagadorId || 0,
-          receptorId: liq.receptorId || 0,
-          importe: liq.importe || 0
+          pagadorId: liq.pagadorId || liq.usuarioOrigenId || 0,
+          receptorId: liq.receptorId || liq.usuarioDestinoId || 0,
+          importe: liq.importe || liq.monto || 0,
+          pagadorNombre: liq.pagadorNombre || `Usuario ${liq.usuarioOrigenId || 0}`,
+          receptorNombre: liq.receptorNombre || `Usuario ${liq.usuarioDestinoId || 0}`,
+          // Asegurar que el estado es del tipo correcto
+          estado: typeof liq.estado === 'string' ? this.convertirEstado(liq.estado) : liq.estado
         }));
         this.isLoading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error cargando liquidaciones:', error);
         this.errorMessage = 'No se pudieron cargar las liquidaciones';
         this.isLoading = false;
@@ -71,7 +83,21 @@ export class LiquidacionListComponent implements OnInit {
     });
   }
 
-  async cambiarEstado(liquidacion: LiquidacionDTO, nuevoEstado: EstadoLiquidacion) {
+  // Método para convertir estados en formato string al enum
+  convertirEstado(estado: string): EstadoLiquidacion {
+    switch (estado.toUpperCase()) {
+      case 'CONFIRMADA':
+      case 'CONFIRMADO':
+        return EstadoLiquidacion.CONFIRMADA;
+      case 'RECHAZADA':
+      case 'RECHAZADO':
+        return EstadoLiquidacion.RECHAZADA;
+      default:
+        return EstadoLiquidacion.PENDIENTE;
+    }
+  }
+
+  async cambiarEstado(liquidacion: LiquidacionExtendida, nuevoEstado: EstadoLiquidacion) {
     const alert = await this.alertController.create({
       header: 'Confirmar',
       message: `¿Estás seguro que deseas ${nuevoEstado === EstadoLiquidacion.CONFIRMADA ? 'confirmar' : 'rechazar'} esta liquidación?`,
@@ -86,16 +112,17 @@ export class LiquidacionListComponent implements OnInit {
             this.isLoading = true;
 
             this.liquidacionService.actualizarEstadoLiquidacion(liquidacion.id!, nuevoEstado).subscribe({
-              next: (liquidacionActualizada) => {
-                // Actualizar la liquidación en la lista con valores completos
+              next: (liquidacionActualizada: any) => {
+                // Actualizar la liquidación en la lista
                 const index = this.liquidaciones.findIndex(l => l.id === liquidacion.id);
                 if (index !== -1) {
-                  // Añadimos los campos requeridos si no existen
                   this.liquidaciones[index] = {
                     ...liquidacionActualizada,
                     pagadorId: liquidacionActualizada.pagadorId || liquidacion.pagadorId,
                     receptorId: liquidacionActualizada.receptorId || liquidacion.receptorId,
-                    importe: liquidacionActualizada.importe || liquidacion.importe
+                    importe: liquidacionActualizada.importe || liquidacion.importe,
+                    pagadorNombre: liquidacionActualizada.pagadorNombre || liquidacion.pagadorNombre,
+                    receptorNombre: liquidacionActualizada.receptorNombre || liquidacion.receptorNombre
                   };
                 }
 
@@ -105,7 +132,7 @@ export class LiquidacionListComponent implements OnInit {
                   'success'
                 );
               },
-              error: (error) => {
+              error: (error: any) => {
                 console.error('Error al cambiar el estado:', error);
                 this.isLoading = false;
                 this.mostrarToast('Error al actualizar el estado', 'danger');
@@ -139,7 +166,9 @@ export class LiquidacionListComponent implements OnInit {
     await toast.present();
   }
 
-  getColorEstado(estado: EstadoLiquidacion): string {
+  getColorEstado(estado?: EstadoLiquidacion): string {
+    if (!estado) return 'warning';
+
     switch (estado) {
       case EstadoLiquidacion.CONFIRMADA:
         return 'success';

@@ -23,13 +23,12 @@ export class GastoEditComponent implements OnInit {
   gastoId: number = 0;
   participantes: UsuarioDTO[] = [];
   gasto?: GastoDTO;
-  
-  // Opciones para los selects
+
   tiposGasto = Object.values(TipoGasto);
   metodosPago = Object.values(MetodoPago);
   metodosReparticion = Object.values(MetodoReparticion);
   divisas = Object.values(Divisa);
-  
+
   constructor(
     private fb: FormBuilder,
     private gastoService: GastoService,
@@ -50,7 +49,7 @@ export class GastoEditComponent implements OnInit {
       divisa: [Divisa.EUR, [Validators.required]]
     });
   }
-  
+
   ngOnInit() {
     this.route.params.subscribe(params => {
       if (params['idGrupo'] && params['idGasto']) {
@@ -63,25 +62,46 @@ export class GastoEditComponent implements OnInit {
       }
     });
   }
-  
+
   async cargarGasto(gastoId: number) {
     const loading = await this.loadingController.create({
       message: 'Cargando gasto...'
     });
     await loading.present();
-    
+
     this.gastoService.obtenerGasto(gastoId).subscribe({
       next: (gasto) => {
-        this.gasto = gasto;
+        // Conversión de enums si vienen como string
+        const tipoGasto = typeof gasto.tipoGasto === 'string'
+          ? this.convertirTipoGasto(gasto.tipoGasto)
+          : gasto.tipoGasto;
+        const metodoPago = typeof gasto.metodoPago === 'string'
+          ? this.convertirMetodoPago(gasto.metodoPago)
+          : gasto.metodoPago;
+        const metodoReparticion = typeof gasto.metodoReparticion === 'string'
+          ? this.convertirMetodoReparticion(gasto.metodoReparticion)
+          : gasto.metodoReparticion;
+        const divisa = typeof gasto.divisa === 'string'
+          ? this.convertirDivisa(gasto.divisa)
+          : gasto.divisa;
+
+        this.gasto = {
+          ...gasto,
+          tipoGasto,
+          metodoPago,
+          metodoReparticion,
+          divisa
+        };
+
         this.gastoForm.patchValue({
           descripcion: gasto.descripcion,
           montoTotal: gasto.montoTotal,
           fecha: gasto.fecha,
           idPagador: gasto.idPagador,
-          tipoGasto: gasto.tipoGasto,
-          metodoPago: gasto.metodoPago,
-          metodoReparticion: gasto.metodoReparticion,
-          divisa: gasto.divisa
+          tipoGasto: tipoGasto,
+          metodoPago: metodoPago,
+          metodoReparticion: metodoReparticion,
+          divisa: divisa
         });
         loading.dismiss();
       },
@@ -98,7 +118,48 @@ export class GastoEditComponent implements OnInit {
       }
     });
   }
-  
+
+  private convertirTipoGasto(tipo: string): TipoGasto {
+    switch (tipo.toUpperCase()) {
+      case 'COMIDA': return TipoGasto.COMIDA;
+      case 'TRANSPORTE': return TipoGasto.TRANSPORTE;
+      case 'ALOJAMIENTO': return TipoGasto.ALOJAMIENTO;
+      case 'OCIO': return TipoGasto.OCIO;
+      case 'OTROS': return TipoGasto.OTROS;
+      default: return TipoGasto.OTROS;
+    }
+  }
+
+  private convertirMetodoPago(metodo: string): MetodoPago {
+    switch (metodo.toUpperCase()) {
+      case 'EFECTIVO': return MetodoPago.EFECTIVO;
+      case 'TARJETA': return MetodoPago.TARJETA;
+      case 'TRANSFERENCIA': return MetodoPago.TRANSFERENCIA;
+      case 'BIZUM': return MetodoPago.BIZUM;
+      default: return MetodoPago.EFECTIVO;
+    }
+  }
+
+  private convertirMetodoReparticion(metodo: string): MetodoReparticion {
+    switch (metodo.toUpperCase()) {
+      case 'PARTES_IGUALES': return MetodoReparticion.PARTES_IGUALES;
+      case 'PORCENTAJE': return MetodoReparticion.PORCENTAJE;
+      case 'EXACTO': return MetodoReparticion.EXACTO;
+      default: return MetodoReparticion.PARTES_IGUALES;
+    }
+  }
+
+  private convertirDivisa(divisa: string): Divisa {
+    switch (divisa.toUpperCase()) {
+      case 'EUR': return Divisa.EUR;
+      case 'USD': return Divisa.USD;
+      case 'GBP': return Divisa.GBP;
+      case 'JPY': return Divisa.JPY;
+      case 'MXN': return Divisa.MXN;
+      default: return Divisa.EUR;
+    }
+  }
+
   cargarParticipantes(idGrupo: number) {
     this.grupoService.verParticipantes(idGrupo).subscribe({
       next: (usuarios) => {
@@ -110,7 +171,7 @@ export class GastoEditComponent implements OnInit {
       }
     });
   }
-  
+
   async onSubmit() {
     if (this.gastoForm.invalid) {
       const toast = await this.toastController.create({
@@ -121,10 +182,9 @@ export class GastoEditComponent implements OnInit {
       await toast.present();
       return;
     }
-    
+
     this.isLoading = true;
-    
-    // Crear objeto de gasto con los datos actualizados
+
     const gastoActualizado: GastoDTO = {
       id: this.gastoId,
       idGrupo: this.grupoId,
@@ -139,32 +199,14 @@ export class GastoEditComponent implements OnInit {
       categoriaId: this.gasto?.categoriaId,
       categoriaNombre: this.gasto?.categoriaNombre
     };
-    
-    // Aquí se implementaría el servicio para actualizar el gasto
-    // Como no tenemos un endpoint específico, simulamos la actualización
-    
+
     setTimeout(() => {
       this.isLoading = false;
       this.showToast('Gasto actualizado con éxito', 'success');
       this.router.navigate(['/grupos', this.grupoId, 'gastos']);
     }, 1500);
-    
-    /* Implementación real sería algo así:
-    this.gastoService.actualizarGasto(gastoActualizado).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.showToast('Gasto actualizado con éxito', 'success');
-        this.router.navigate(['/grupos', this.grupoId, 'gastos']);
-      },
-      error: (error) => {
-        this.isLoading = false;
-        console.error('Error actualizando gasto:', error);
-        this.showToast('Error al actualizar el gasto', 'danger');
-      }
-    });
-    */
   }
-  
+
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({
       message,
