@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { GrupoService } from '../services/grupo.service';
 import { GastoService } from '../services/gasto.service';
@@ -12,24 +12,31 @@ import { GrupoDTO } from '../models/grupo.model';
 import { TipoGasto, MetodoPago, MetodoReparticion } from '../models/enums';
 import { Divisa } from '../models/divisa.model';
 
+// Registra elementos de Swiper
+import { register } from 'swiper/element/bundle';
+register();
+
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule, IonicModule, RouterLink],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA] // Necesario para usar elementos web personalizados
 })
 export class HomeComponent implements OnInit {
-  gruposRecientes: GrupoDTO[] = [];
+  grupos: GrupoDTO[] = [];
   ultimosGastos: GastoDTO[] = [];
   balancesPendientes: BalanceDTO[] = [];
   isLoading = true;
+  userName = '';
 
   constructor(
     private authService: AuthService,
     private grupoService: GrupoService,
     private gastoService: GastoService,
-    private balanceService: BalanceService
+    private balanceService: BalanceService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -46,11 +53,13 @@ export class HomeComponent implements OnInit {
       return;
     }
 
+    // Guardar el nombre del usuario
+    this.userName = currentUser.nombre || 'Usuario';
+
     // Cargar los grupos del usuario
     this.grupoService.listarGrupos(currentUser.id).subscribe({
       next: (grupos) => {
-        // Asegurar que descripcion es siempre string
-        this.gruposRecientes = grupos.slice(0, 3).map(grupo => ({
+        this.grupos = grupos.map(grupo => ({
           ...grupo,
           descripcion: grupo.descripcion || ''
         }));
@@ -59,26 +68,16 @@ export class HomeComponent implements OnInit {
         if (grupos.length > 0) {
           this.gastoService.listarGastosPorGrupo(grupos[0].id!).subscribe({
             next: (gastos) => {
-              // Convertir string a los tipos enum correspondientes
               this.ultimosGastos = gastos.slice(0, 5).map(gasto => ({
                 ...gasto,
-                tipoGasto: gasto.tipoGasto as TipoGasto,
-                metodoPago: gasto.metodoPago as MetodoPago,
-                metodoReparticion: gasto.metodoReparticion as MetodoReparticion,
-                divisa: Divisa[gasto.divisa as keyof typeof Divisa] // Conversión correcta a enum Divisa
+                tipoGasto: this.convertirTipoGasto(gasto.tipoGasto),
+                metodoPago: this.convertirMetodoPago(gasto.metodoPago),
+                metodoReparticion: this.convertirMetodoReparticion(gasto.metodoReparticion),
+                divisa: this.convertirDivisa(gasto.divisa)
               }));
 
-              // Cargar los balances del primer grupo
-              this.balanceService.obtenerBalancesPorGrupo(grupos[0].id!).subscribe({
-                next: (balances) => {
-                  this.balancesPendientes = balances.filter(b => b.importe < 0);
-                  this.isLoading = false;
-                },
-                error: (error) => {
-                  console.error('Error cargando balances:', error);
-                  this.isLoading = false;
-                }
-              });
+              // Finalizar carga
+              this.isLoading = false;
             },
             error: (error) => {
               console.error('Error cargando gastos:', error);
@@ -112,5 +111,66 @@ export class HomeComponent implements OnInit {
       case 'OTROS':
       default: return 'pricetag';
     }
+  }
+
+  nuevoGrupo() {
+    this.router.navigate(['/grupos/nuevo']);
+  }
+
+  verGrupo(id: number) {
+    this.router.navigate(['/grupos', id]);
+  }
+
+  verInformes() {
+    this.router.navigate(['/informes']);
+  }
+
+  verPerfil() {
+    this.router.navigate(['/perfil']);
+  }
+
+  private convertirTipoGasto(tipo: any): TipoGasto {
+    if (typeof tipo === 'string') {
+      switch (tipo.toUpperCase()) {
+        case 'COMIDA': return TipoGasto.COMIDA;
+        case 'TRANSPORTE': return TipoGasto.TRANSPORTE;
+        case 'ALOJAMIENTO': return TipoGasto.ALOJAMIENTO;
+        case 'OCIO': return TipoGasto.OCIO;
+        default: return TipoGasto.OTROS;
+      }
+    }
+    return tipo;
+  }
+
+  private convertirMetodoPago(metodo: any): MetodoPago {
+    if (typeof metodo === 'string') {
+      switch (metodo.toUpperCase()) {
+        case 'EFECTIVO': return MetodoPago.EFECTIVO;
+        case 'TARJETA': return MetodoPago.TARJETA;
+        case 'TRANSFERENCIA': return MetodoPago.TRANSFERENCIA;
+        case 'BIZUM': return MetodoPago.BIZUM;
+        default: return MetodoPago.EFECTIVO;
+      }
+    }
+    return metodo;
+  }
+
+  private convertirMetodoReparticion(metodo: any): MetodoReparticion {
+    if (typeof metodo === 'string') {
+      switch (metodo.toUpperCase()) {
+        case 'PARTES_IGUALES': return MetodoReparticion.PARTES_IGUALES;
+        case 'PORCENTAJE': return MetodoReparticion.PORCENTAJE;
+        case 'EXACTO': return MetodoReparticion.EXACTO;
+        default: return MetodoReparticion.PARTES_IGUALES;
+      }
+    }
+    return metodo;
+  }
+
+  private convertirDivisa(divisa: any): Divisa {
+    if (typeof divisa === 'string') {
+      return divisa as unknown as Divisa;
+    }
+    return divisa;
   }
 }

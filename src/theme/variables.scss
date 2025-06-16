@@ -1,2 +1,76 @@
 // For information on how to create your own theme, please see:
 // http://ionicframework.com/docs/theming/
+
+/* Paleta de colores*/
+//Primario
+:root {
+  --ion-color-first: #001F3F;
+  --ion-color-first-rgb: 0,31,63;
+  --ion-color-first-contrast: #ffffff;
+  --ion-color-first-contrast-rgb: 255,255,255;
+  --ion-color-first-shade: #001b37;
+  --ion-color-first-tint: #1a3552;
+}
+
+.ion-color-first {
+  --ion-color-base: var(--ion-color-first);
+  --ion-color-base-rgb: var(--ion-color-first-rgb);
+  --ion-color-contrast: var(--ion-color-first-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-first-contrast-rgb);
+  --ion-color-shade: var(--ion-color-first-shade);
+  --ion-color-tint: var(--ion-color-first-tint);
+}
+//Secundario
+:root {
+  --ion-color-secondary: #3A6D8C;
+  --ion-color-secondary-rgb: 58,109,140;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255,255,255;
+  --ion-color-secondary-shade: #33607b;
+  --ion-color-secondary-tint: #4e7c98;
+}
+
+.ion-color-secondary {
+  --ion-color-base: var(--ion-color-secondary);
+  --ion-color-base-rgb: var(--ion-color-secondary-rgb);
+  --ion-color-contrast: var(--ion-color-secondary-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-secondary-contrast-rgb);
+  --ion-color-shade: var(--ion-color-secondary-shade);
+  --ion-color-tint: var(--ion-color-secondary-tint);
+}
+//Terceario
+:root {
+  --ion-color-tertiary: #FFFFFF;
+  --ion-color-tertiary-rgb: 255,255,255;
+  --ion-color-tertiary-contrast: #000000;
+  --ion-color-tertiary-contrast-rgb: 0,0,0;
+  --ion-color-tertiary-shade: #e0e0e0;
+  --ion-color-tertiary-tint: #ffffff;
+}
+
+.ion-color-tertiary {
+  --ion-color-base: var(--ion-color-tertiary);
+  --ion-color-base-rgb: var(--ion-color-tertiary-rgb);
+  --ion-color-contrast: var(--ion-color-tertiary-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-tertiary-contrast-rgb);
+  --ion-color-shade: var(--ion-color-tertiary-shade);
+  --ion-color-tint: var(--ion-color-tertiary-tint);
+}
+//Cuaternario
+:root {
+  --ion-color-cuaternary: #ead8b1;
+  --ion-color-cuaternary-rgb: 234,216,177;
+  --ion-color-cuaternary-contrast: #000000;
+  --ion-color-cuaternary-contrast-rgb: 0,0,0;
+  --ion-color-cuaternary-shade: #cebe9c;
+  --ion-color-cuaternary-tint: #ecdcb9;
+}
+
+.ion-color-cuaternary {
+  --ion-color-base: var(--ion-color-cuaternary);
+  --ion-color-base-rgb: var(--ion-color-cuaternary-rgb);
+  --ion-color-contrast: var(--ion-color-cuaternary-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-cuaternary-contrast-rgb);
+  --ion-color-shade: var(--ion-color-cuaternary-shade);
+  --ion-color-tint: var(--ion-color-cuaternary-tint);
+}

@@ -1,3 +1,98 @@
-<p>
-  grupo-form works!
-</p>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/grupos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Crear nuevo grupo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <app-loading *ngIf="isLoading"></app-loading>
+  <app-error-message *ngIf="errorMessage" [message]="errorMessage"></app-error-message>
+
+  <form [formGroup]="grupoForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading">
+    <ion-list lines="full">
+      <ion-item>
+        <ion-label position="floating">Nombre del grupo*</ion-label>
+        <ion-input
+          formControlName="nombre"
+          type="text"
+          required>
+        </ion-input>
+      </ion-item>
+      <ion-note slot="error" *ngIf="grupoForm.get('nombre')?.touched && grupoForm.get('nombre')?.errors?.['required']">
+        El nombre es obligatorio
+      </ion-note>
+      <ion-note slot="error" *ngIf="grupoForm.get('nombre')?.touched && grupoForm.get('nombre')?.errors?.['minlength']">
+        El nombre debe tener al menos 3 caracteres
+      </ion-note>
+
+      <ion-item>
+        <ion-label position="floating">Descripción*</ion-label>
+        <ion-textarea
+          formControlName="descripcion"
+          rows="4"
+          required>
+        </ion-textarea>
+      </ion-item>
+      <ion-note slot="error" *ngIf="grupoForm.get('descripcion')?.touched && grupoForm.get('descripcion')?.errors?.['required']">
+        La descripción es obligatoria
+      </ion-note>
+
+      <ion-item>
+        <ion-label position="floating">URL de imagen</ion-label>
+        <ion-input
+          formControlName="imagenUrl"
+          type="text">
+        </ion-input>
+      </ion-item>
+    </ion-list>
+
+    <ion-card class="participantes-card">
+      <ion-card-header>
+        <ion-card-title>Añadir participantes</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let usuario of usuarios">
+            <ion-avatar slot="start">
+              <img [src]="usuario.urlImg || 'assets/default-avatar.png'" alt="Avatar">
+            </ion-avatar>
+            <ion-label>
+              <h2>{{ usuario.nombre }} {{ usuario.apellido }}</h2>
+              <p>{{ usuario.email }}</p>
+            </ion-label>
+            <ion-checkbox
+              slot="end"
+              [checked]="isParticipanteSelected(usuario.id)"
+              (ionChange)="toggleParticipante(usuario.id)">
+            </ion-checkbox>
+          </ion-item>
+
+          <ion-item *ngIf="usuarios.length === 0">
+            <ion-label class="ion-text-center">
+              No hay usuarios disponibles para añadir
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="ion-padding">
+      <ion-button
+        expand="block"
+        type="submit"
+        [disabled]="grupoForm.invalid">
+        Crear grupo
+      </ion-button>
+      <ion-button
+        expand="block"
+        type="button"
+        color="medium"
+        (click)="cancelar()">
+        Cancelar
+      </ion-button>
+    </div>
+  </form>
+</ion-content>
