@@ -31,8 +31,11 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <app-loading *ngIf="isLoading"></app-loading>
-  <app-error-message *ngIf="errorMessage" [message]="errorMessage" (retry)="cargarGrupo()"></app-error-message>
+  <ion-spinner *ngIf="isLoading" name="crescent" class="ion-padding ion-text-center"></ion-spinner>
+  <ion-item *ngIf="errorMessage" color="danger" lines="none">
+    <ion-label class="ion-text-wrap">{{ errorMessage }}</ion-label>
+    <ion-button slot="end" fill="clear" (click)="cargarGrupo()">Reintentar</ion-button>
+  </ion-item>
 
   <div *ngIf="grupo && !isLoading && !errorMessage">
     <!-- Sección de Información -->
@@ -59,7 +62,7 @@
             <ion-item>
               <ion-icon name="people-outline" slot="start"></ion-icon>
               <ion-label>
-                <h2>{{ grupo.usuarios?.length || 0 }} participantes</h2>
+                <h2>{{ obtenerNumParticipantes() }} participantes</h2>
               </ion-label>
             </ion-item>
             <ion-item>
@@ -101,7 +104,7 @@
         </ion-card-header>
         <ion-card-content>
           <ion-list>
-            <ion-item *ngFor="let usuario of grupo.usuarios">
+            <ion-item *ngFor="let usuario of obtenerParticipantes()">
               <ion-avatar slot="start">
                 <img [src]="usuario.urlImg || 'assets/default-avatar.png'" alt="Avatar">
               </ion-avatar>

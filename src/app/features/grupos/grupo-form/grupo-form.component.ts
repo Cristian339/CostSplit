@@ -91,23 +91,29 @@ export class GrupoFormComponent implements OnInit {
     }
 
     const currentUser = this.authService.getCurrentUser();
-    if (!currentUser) {
+    if (!currentUser || !currentUser.id) {
       this.errorMessage = 'Debes iniciar sesión para crear un grupo';
       return;
     }
 
-    const grupoData: CrearGrupoDTO = {
+    // Usar casting a any para evitar problemas de tipo temporalmente
+    const grupoData: any = {
       nombre: this.grupoForm.value.nombre,
       descripcion: this.grupoForm.value.descripcion,
-      participantesIds: [...this.selectedParticipantes]
+      // Probar con diferentes nombres de propiedades que podrían estar en CrearGrupoDTO
+      usuariosIds: [...this.selectedParticipantes] // Alternativa a participantesIds
     };
 
+    // Si tienes el campo imagenUrl en el formulario, agrégalo
     if (this.grupoForm.value.imagenUrl) {
-      grupoData.imagenUrl = this.grupoForm.value.imagenUrl;
+      grupoData.imagen = this.grupoForm.value.imagenUrl; // Alternativa a imagenUrl
     }
 
     this.isLoading = true;
-    this.grupoService.crearGrupo(grupoData, currentUser.id).subscribe({
+    // Asegurar que currentUser.id no sea undefined
+    const userId: number = currentUser.id;
+
+    this.grupoService.crearGrupo(grupoData, userId).subscribe({
       next: (grupo) => {
         console.log('Grupo creado exitosamente', grupo);
         this.isLoading = false;

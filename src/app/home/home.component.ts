@@ -112,10 +112,19 @@ export class HomeComponent implements OnInit {
       default: return 'pricetag';
     }
   }
+  nuevoGrupo() {
+    const esPrimerGrupo = this.grupos.length === 0;
 
+    this.router.navigate(['/grupos/nuevo'], {
+      queryParams: {
+        primerGrupo: esPrimerGrupo
+      }
+    });
+  }
+/*
   nuevoGrupo() {
     this.router.navigate(['/grupos/nuevo']);
-  }
+  }*/
 
   verGrupo(id: number) {
     this.router.navigate(['/grupos', id]);
@@ -173,4 +182,6 @@ export class HomeComponent implements OnInit {
     }
     return divisa;
   }
+
+
 }

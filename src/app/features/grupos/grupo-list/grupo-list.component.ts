@@ -1,22 +1,39 @@
 // grupo-list.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
-import { Router } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { GrupoService } from '../../services/grupo.service';
-import { AuthService } from '../../services/auth.service';
-import { GrupoDTO } from '../../models/grupo.model';
+import { Router, RouterModule } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { GrupoService } from '../../../services/grupo.service';
+import { AuthService } from '../../../services/auth.service';
+import { LoadingComponent } from '../../../components/loading/loading.component';
+import { ErrorMessageComponent } from '../../../components/error-message/error-message.component';
+
+interface GrupoSimple {
+  id: number;
+  nombre: string;
+  descripcion: string;
+}
 
 @Component({
   selector: 'app-grupo-list',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
-  templateUrl: './grupo-list.component.html'
+  imports: [
+    CommonModule,
+    IonicModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    LoadingComponent,
+    ErrorMessageComponent
+  ],
+  templateUrl: './grupo-list.component.html',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class GrupoListComponent implements OnInit {
-  grupos: GrupoDTO[] = [];
+  grupos: any[] = []; // Usar any[] para evitar conflictos de tipos
   isLoading = false;
+  errorMessage = '';
 
   constructor(
     private grupoService: GrupoService,
@@ -31,6 +48,7 @@ export class GrupoListComponent implements OnInit {
 
   cargarGrupos() {
     this.isLoading = true;
+    this.errorMessage = '';
     const userId = this.authService.getCurrentUser()?.id;
 
     if (!userId) {
@@ -46,9 +64,17 @@ export class GrupoListComponent implements OnInit {
       error: (error) => {
         console.error('Error cargando grupos:', error);
         this.isLoading = false;
+        this.errorMessage = 'Error al cargar grupos';
         this.mostrarToast('Error al cargar grupos', 'danger');
       }
     });
+  }
+
+  doRefresh(event: any) {
+    this.cargarGrupos();
+    setTimeout(() => {
+      event.target.complete();
+    }, 1000);
   }
 
   verDetalleGrupo(grupoId: number) {

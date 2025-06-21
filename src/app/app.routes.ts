@@ -25,6 +25,27 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/profile/profile.component').then((m) => m.ProfileComponent),
     canActivate: [authGuard],
   },
+  // Rutas de grupos (añadidas)
+  {
+    path: 'grupos',
+    loadComponent: () => import('./features/grupos/grupo-list/grupo-list.component').then(m => m.GrupoListComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'grupos/nuevo',
+    loadComponent: () => import('./features/grupos/grupo-form/grupo-form.component').then(m => m.GrupoFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'grupos/:id',
+    loadComponent: () => import('./features/grupos/grupo-detail/grupo-detail.component').then(m => m.GrupoDetailComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'grupos/:id/editar',
+    loadComponent: () => import('./features/grupos/grupo-form/grupo-form.component').then(m => m.GrupoFormComponent),
+    canActivate: [authGuard]
+  },
   {
     path: 'grupos/:idGrupo/liquidaciones',
     loadComponent: () => import('./features/liquidaciones/liquidacion-list/liquidacion-list.component').then(m => m.LiquidacionListComponent),
