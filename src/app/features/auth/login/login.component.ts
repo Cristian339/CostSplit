@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { LoadingController, ToastController, NavController } from '@ionic/angular';
 import { AuthService } from '../../../services/auth.service';
-import { LoginDTO } from '../../../models/login.model'; // Importando el modelo
+import { LoginDTO } from '../../../models/login.model';
 import {
   IonIcon,
   IonInput,
@@ -22,6 +22,7 @@ import {
   logInOutline
 } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
+import { finalize, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -45,13 +46,16 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   showPassword = false;
   isLoading = false;
+  returnUrl: string = '/home';
 
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private loadingController: LoadingController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private navCtrl: NavController
   ) {
     addIcons({
       'mail-outline': mailOutline,
@@ -69,6 +73,11 @@ export class LoginComponent implements OnInit {
       rememberMe: [false]
     });
 
+    // Obtener la URL de retorno de los query params
+    this.route.queryParams.subscribe(params => {
+      this.returnUrl = params['returnUrl'] || '/home';
+    });
+
     // Comprobar si hay credenciales guardadas
     const savedEmail = localStorage.getItem('rememberedEmail');
     if (savedEmail) {
@@ -81,12 +90,10 @@ export class LoginComponent implements OnInit {
 
   get email() {
     return this.loginForm.get('email');
-    console.log(this.email)
   }
 
   get password() {
     return this.loginForm.get('password');
-    console.log(this.password)
   }
 
   toggleShowPassword() {
@@ -99,7 +106,6 @@ export class LoginComponent implements OnInit {
 
   async login() {
     if (this.loginForm.invalid) {
-      // Marcar todos los campos como tocados para mostrar errores
       Object.keys(this.loginForm.controls).forEach(key => {
         this.loginForm.get(key)?.markAsTouched();
       });
@@ -108,7 +114,6 @@ export class LoginComponent implements OnInit {
 
     const { email, password, rememberMe } = this.loginForm.value;
 
-    // Guardar email si rememberMe está activado
     if (rememberMe) {
       localStorage.setItem('rememberedEmail', email);
     } else {
@@ -122,28 +127,48 @@ export class LoginComponent implements OnInit {
     });
     await loading.present();
 
-    // Crear objeto LoginDTO con los campos correctos para el backend
     const loginDTO: LoginDTO = {
       email: email,
-      contrasenia: password // Cambiado para coincidir con el backend
+      contrasenia: password
     };
 
-    this.authService.login(loginDTO).subscribe({
-      next: () => {
+    // Mejorar manejo del flujo de autenticación
+    this.authService.login(loginDTO).pipe(
+      tap(response => {
+        console.log('Login exitoso, respuesta:', response);
+      }),
+      finalize(() => {
         loading.dismiss();
         this.isLoading = false;
-        this.router.navigateByUrl('/home');
+      })
+    ).subscribe({
+      next: () => {
+        this.showSuccess('¡Inicio de sesión exitoso!');
+
+        // Esperar un momento para asegurar que el token/estado de autenticación se establezca
+        setTimeout(() => {
+          console.log('Estado de autenticación actualizado, intentando navegar...');
+          // Forzar actualización de la ruta usando window.location para evitar problemas con guards
+          window.location.href = this.returnUrl;
+        }, 1000);
       },
       error: (error) => {
-        loading.dismiss();
-        this.isLoading = false;
-
-        // Extraer mensaje específico del error
         const errorMessage = error.error?.token || 'Error al iniciar sesión. Verifica tus credenciales e intenta de nuevo.';
         this.showError(errorMessage);
         console.error('Error de login:', error);
       }
     });
+  }
+
+  private async showSuccess(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      position: 'top',
+      color: 'success',
+      buttons: [{ text: 'OK', role: 'cancel' }]
+    });
+    await toast.present();
   }
 
   private async showError(message: string) {
