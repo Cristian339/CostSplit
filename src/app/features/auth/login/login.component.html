@@ -1,3 +1,83 @@
-<p>
-  login works!
-</p>
+<ion-content>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="logo-container">
+        <img src="assets/icon/logo.svg" alt="CostSplit Logo" class="logo">
+      </div>
+
+      <h1 class="login-title">¡Bienvenido a CostSplitBD!</h1>
+      <p class="login-subtitle">Divide gastos con amigos de forma sencilla y transparente</p>
+
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <!-- Input de email mejorado con Material Design -->
+        <div class="input-container">
+          <ion-input
+            mode="md"
+            fill="outline"
+            label="Correo electrónico"
+            label-placement="floating"
+            type="email"
+            formControlName="email"
+            placeholder="ejemplo@correo.com"
+            [errorText]="(email?.invalid && (email?.dirty || email?.touched)) ?
+              (email?.errors?.['required'] ? 'El correo electrónico es obligatorio' :
+              email?.errors?.['email'] ? 'Ingresa un correo electrónico válido' : '') : ''">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+          </ion-input>
+        </div>
+
+        <!-- Input de contraseña mejorado con Material Design -->
+        <div class="input-container">
+          <ion-input
+            mode="md"
+            fill="outline"
+            label="Contraseña"
+            label-placement="floating"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="••••••••"
+            [errorText]="(password?.invalid && (password?.dirty || password?.touched)) ?
+              (password?.errors?.['required'] ? 'La contraseña es obligatoria' :
+              password?.errors?.['minlength'] ? 'La contraseña debe tener al menos 6 caracteres' : '') : ''">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-button fill="clear" size="small" slot="end" (click)="toggleShowPassword()" class="password-toggle">
+              <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </ion-button>
+          </ion-input>
+        </div>
+
+        <!-- Opciones de login -->
+        <div class="options-container">
+          <div class="remember-me">
+            <ion-checkbox formControlName="rememberMe"></ion-checkbox>
+            <ion-label>Recordar mi correo</ion-label>
+          </div>
+
+          <ion-button fill="clear" class="forgot-button" (click)="mostrarRecuperacion()">
+            ¿Olvidaste tu contraseña?
+          </ion-button>
+        </div>
+
+        <!-- Botón de inicio de sesión -->
+        <ion-button
+          expand="block"
+          color="first"
+          type="submit"
+          [disabled]="loginForm.invalid || isLoading"
+          class="login-button">
+          <ion-icon name="log-in-outline" slot="start" *ngIf="!isLoading"></ion-icon>
+          <ion-spinner name="circles" *ngIf="isLoading"></ion-spinner>
+          <span *ngIf="!isLoading">Iniciar sesión</span>
+          <span *ngIf="isLoading">Iniciando...</span>
+        </ion-button>
+
+        <div class="signup-prompt">
+          <p>¿No tienes cuenta?</p>
+          <ion-button fill="clear" color="first" routerLink="/register">
+            Regístrate ahora
+          </ion-button>
+        </div>
+      </form>
+    </div>
+  </div>
+</ion-content>

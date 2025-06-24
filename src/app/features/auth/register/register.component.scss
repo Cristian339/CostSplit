@@ -1,0 +1,129 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  padding: 20px;
+  background: linear-gradient(135deg, var(--ion-color-first) 0%, var(--ion-color-secondary) 100%);
+}
+
+.register-card {
+  width: 100%;
+  max-width: 450px;
+  background-color: white;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 170px;
+  height: 170px;
+  object-fit: contain;
+}
+
+.register-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ion-color-first);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.register-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.input-container {
+  margin-bottom: 16px;
+  color: var(--ion-color-first);
+}
+
+
+
+ion-input {
+  --border-radius: 8px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  font-size: 14px;
+  --border-color: #d0d0d0;
+  --border-width: 1px;
+  --box-shadow: none;
+}
+
+ion-input.has-focus {
+  --border-color: var(--ion-color-first);
+  --border-width: 2px;
+}
+
+ion-input:hover {
+  --border-color: var(--ion-color-first);
+}
+
+.input-error {
+  --border-color: var(--ion-color-danger) !important;
+}
+
+.password-toggle {
+  height: 100%;
+  margin: 0;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --color: var(--ion-color-first);
+}
+
+.register-button {
+  margin-top: 24px;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 8px rgba(var(--ion-color-first-rgb), 0.3);
+  font-weight: 600;
+  height: 48px;
+  font-size: 16px;
+  text-transform: none;
+}
+
+.register-button:hover {
+  --box-shadow: 0 6px 10px rgba(var(--ion-color-first-rgb), 0.4);
+}
+
+.login-prompt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 24px;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+  }
+
+  ion-button {
+    margin: 0;
+    font-weight: 600;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    height: auto;
+    --color: var(--ion-color-first);
+  }
+}
+
+@media (max-height: 600px) {
+  .register-container {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 320px) {
+  .register-card {
+    padding: 20px;
+  }
+}

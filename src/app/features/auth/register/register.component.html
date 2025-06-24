@@ -1,3 +1,131 @@
-<p>
-  register works!
-</p>
+<ion-content>
+  <div class="register-container">
+    <div class="register-card">
+      <div class="logo-container">
+        <img src="assets/icon/logo.svg" alt="CostSplit Logo" class="logo">
+      </div>
+
+      <h1 class="register-title">Crea tu cuenta</h1>
+      <p class="register-subtitle">Únete a CostSplit y comienza a dividir gastos fácilmente</p>
+
+      <form [formGroup]="registerForm" (ngSubmit)="register()">
+        <!-- Input de nombre -->
+        <div class="input-container">
+          <ion-input
+            mode="md"
+            fill="outline"
+            label="Nombre"
+            label-placement="floating"
+            type="text"
+            formControlName="name"
+            placeholder="Escribe tu nombre"
+            [class.input-error]="name?.invalid && (name?.dirty || name?.touched)"
+            [errorText]="(name?.invalid && (name?.dirty || name?.touched)) ?
+              (name?.errors?.['required'] ? 'El nombre es obligatorio' :
+              name?.errors?.['minlength'] ? 'El nombre debe tener al menos 3 caracteres' : '') : ''">
+            <ion-icon name="person-outline" slot="start" color="first"></ion-icon>
+          </ion-input>
+        </div>
+
+        <!-- Input de apellido -->
+        <div class="input-container">
+          <ion-input
+            mode="md"
+            fill="outline"
+            label="Apellido"
+            label-placement="floating"
+            type="text"
+            formControlName="lastName"
+            placeholder="Escribe tu apellido"
+            [class.input-error]="lastName?.invalid && (lastName?.dirty || lastName?.touched)"
+            [errorText]="(lastName?.invalid && (lastName?.dirty || lastName?.touched)) ?
+              (lastName?.errors?.['required'] ? 'El apellido es obligatorio' :
+              lastName?.errors?.['minlength'] ? 'El apellido debe tener al menos 2 caracteres' : '') : ''">
+            <ion-icon name="person-outline" slot="start" color="first"></ion-icon>
+          </ion-input>
+        </div>
+
+        <!-- Input de email -->
+        <div class="input-container">
+          <ion-input
+            mode="md"
+            fill="outline"
+            label="Correo electrónico"
+            label-placement="floating"
+            type="email"
+            formControlName="email"
+            placeholder="ejemplo@correo.com"
+            [class.input-error]="email?.invalid && (email?.dirty || email?.touched)"
+            [errorText]="(email?.invalid && (email?.dirty || email?.touched)) ?
+              (email?.errors?.['required'] ? 'El correo electrónico es obligatorio' :
+              email?.errors?.['email'] ? 'Ingresa un correo electrónico válido' : '') : ''">
+            <ion-icon name="mail-outline" slot="start" color="first"></ion-icon>
+          </ion-input>
+        </div>
+
+        <!-- Input de contraseña -->
+        <div class="input-container">
+          <ion-input
+            mode="md"
+            fill="outline"
+            label="Contraseña"
+            label-placement="floating"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="••••••••"
+            [class.input-error]="password?.invalid && (password?.dirty || password?.touched)"
+            [errorText]="(password?.invalid && (password?.dirty || password?.touched)) ?
+              (password?.errors?.['required'] ? 'La contraseña es obligatoria' :
+              password?.errors?.['minlength'] ? 'La contraseña debe tener al menos 6 caracteres' : '') : ''">
+            <ion-icon name="lock-closed-outline" slot="start" color="first"></ion-icon>
+            <ion-button fill="clear" size="small" slot="end" (click)="toggleShowPassword()" class="password-toggle">
+              <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" color="first"></ion-icon>
+            </ion-button>
+          </ion-input>
+        </div>
+
+        <!-- Input confirmar contraseña -->
+        <div class="input-container">
+          <ion-input
+            mode="md"
+            fill="outline"
+            label="Confirmar contraseña"
+            label-placement="floating"
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            formControlName="confirmPassword"
+            placeholder="••••••••"
+            [class.input-error]="(confirmPassword?.invalid && (confirmPassword?.dirty || confirmPassword?.touched)) ||
+              (registerForm.errors?.['passwordMismatch'] && confirmPassword?.dirty)"
+            [errorText]="(confirmPassword?.invalid && (confirmPassword?.dirty || confirmPassword?.touched)) ?
+              (confirmPassword?.errors?.['required'] ? 'Confirma tu contraseña' : '') :
+              (registerForm.errors?.['passwordMismatch'] && confirmPassword?.dirty) ? 'Las contraseñas no coinciden' : ''">
+            <ion-icon name="lock-closed-outline" slot="start" color="first"></ion-icon>
+            <ion-button fill="clear" size="small" slot="end" (click)="toggleShowConfirmPassword()" class="password-toggle">
+              <ion-icon [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'" color="first"></ion-icon>
+            </ion-button>
+          </ion-input>
+        </div>
+
+        <!-- Botón de registro -->
+        <ion-button
+          expand="block"
+          color="first"
+          type="submit"
+          [disabled]="registerForm.invalid || isLoading"
+          class="register-button">
+          <ion-icon name="create-outline" slot="start" *ngIf="!isLoading"></ion-icon>
+          <ion-spinner name="circles" *ngIf="isLoading"></ion-spinner>
+          <span *ngIf="!isLoading">Crear cuenta</span>
+          <span *ngIf="isLoading">Creando cuenta...</span>
+        </ion-button>
+      </form>
+
+      <div class="login-prompt">
+        <p>¿Ya tienes cuenta?</p>
+        <ion-button fill="clear" color="first" routerLink="/login">
+          Iniciar sesión
+        </ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

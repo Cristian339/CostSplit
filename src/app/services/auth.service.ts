@@ -4,12 +4,17 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Usuario } from '../models/usuario.model';
+import { LoginDTO } from '../models/login.model';
+import { RecuperarPassword } from '../models/RecuperarPassword.model';
+import { VerificarCodigo } from '../models/VerificarCodigo.model';
+import { CambiarPassword } from '../models/CambiarPassword.model';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<Usuario | null>(this.getUserFromStorage());
   public currentUser$ = this.currentUserSubject.asObservable();
+  private apiUrl = `http://localhost:8080/auth`;
 
   constructor(private http: HttpClient) {}
 
@@ -17,8 +22,8 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  login(email: string, password: string): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/auth/login`, { email, password })
+  login(loginDTO: LoginDTO): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/login`, loginDTO)
       .pipe(
         tap(response => {
           localStorage.setItem('token', response.token);
@@ -33,6 +38,16 @@ export class AuthService {
       );
   }
 
+  registro(usuarioDTO: any): Observable<Usuario> {
+    return this.http.post<Usuario>(`${this.apiUrl}/registro`, usuarioDTO)
+      .pipe(
+        catchError(error => {
+          console.error('Error en registro:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
@@ -42,6 +57,49 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem('token');
+  }
+
+  // Métodos para recuperación de contraseña
+
+  // Método para solicitar recuperación
+  solicitarRecuperacion(email: string): Observable<any> {
+    const recuperar: RecuperarPassword = { email };
+    return this.http.post<any>(`${this.apiUrl}/recuperacion/solicitar`, recuperar)
+      .pipe(
+        catchError(error => {
+          console.error('Error al solicitar recuperación:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+// Método para verificar código
+  verificarCodigo(email: string, codigo: string): Observable<any> {
+    const verificar: VerificarCodigo = { email, codigo };
+    return this.http.post<any>(`${this.apiUrl}/recuperacion/verificar`, verificar)
+      .pipe(
+        catchError(error => {
+          console.error('Error al verificar código:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+// Método para cambiar contraseña
+  cambiarPassword(email: string, codigo: string, password: string): Observable<any> {
+    const cambiar: CambiarPassword = {
+      email,
+      codigo,
+      nuevaContrasenia: password // Nombre correcto según el DTO de Java
+    };
+
+    return this.http.post<any>(`${this.apiUrl}/recuperacion/cambiar-password`, cambiar)
+      .pipe(
+        catchError(error => {
+          console.error('Error al cambiar contraseña:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   private getUserFromStorage(): Usuario | null {

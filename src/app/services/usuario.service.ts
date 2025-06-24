@@ -3,15 +3,9 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { UsuarioDTO } from '../models/usuario.model';
 
-export interface UsuarioDTO {
-  id?: number;
-  nombre: string;
-  apellidos?: string;
-  email: string;
-  telefono?: string;
-  // Otros campos necesarios
-}
+
 
 @Injectable({
   providedIn: 'root'
@@ -31,10 +25,6 @@ export class UsuarioService {
       .pipe(catchError(this.handleError));
   }
 
-  crearUsuario(usuarioDTO: UsuarioDTO): Observable<UsuarioDTO> {
-    return this.http.post<UsuarioDTO>(this.apiUrl, usuarioDTO)
-      .pipe(catchError(this.handleError));
-  }
 
   actualizarUsuario(id: number, usuarioDTO: UsuarioDTO): Observable<UsuarioDTO> {
     return this.http.put<UsuarioDTO>(`${this.apiUrl}/${id}`, usuarioDTO)
