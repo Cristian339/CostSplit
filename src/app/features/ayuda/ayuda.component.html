@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="primary">
+  <ion-toolbar color="first">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
@@ -7,11 +7,15 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <h1>Ayuda y soporte</h1>
+<ion-content class="help-content">
+  <div class="header-banner">
+    <h1>Ayuda y soporte</h1>
+    <p>Todo lo que necesitas saber sobre CostSplitBD</p>
+  </div>
 
-  <ion-card>
+  <ion-card class="feature-card">
     <ion-card-header>
+      <ion-icon name="bulb-outline"></ion-icon>
       <ion-card-title>Guía rápida</ion-card-title>
     </ion-card-header>
     <ion-card-content>
@@ -19,22 +23,35 @@
         CostSplit te ayuda a gestionar gastos compartidos de manera sencilla.
         Con nuestra aplicación podrás:
       </p>
-      <ul>
-        <li>Crear grupos para organizar tus gastos</li>
-        <li>Registrar gastos y repartirlos entre los participantes</li>
-        <li>Ver quién debe dinero y a quién</li>
-        <li>Registrar liquidaciones de deudas</li>
-      </ul>
+      <div class="feature-list">
+        <div class="feature-item">
+          <ion-icon name="people-outline"></ion-icon>
+          <span>Crear grupos para organizar tus gastos</span>
+        </div>
+        <div class="feature-item">
+          <ion-icon name="calculator-outline"></ion-icon>
+          <span>Registrar gastos y repartirlos entre los participantes</span>
+        </div>
+        <div class="feature-item">
+          <ion-icon name="cash-outline"></ion-icon>
+          <span>Ver quién debe dinero y a quién</span>
+        </div>
+        <div class="feature-item">
+          <ion-icon name="checkmark-done-outline"></ion-icon>
+          <span>Registrar liquidaciones de deudas</span>
+        </div>
+      </div>
     </ion-card-content>
   </ion-card>
 
-  <ion-list>
-    <ion-list-header>
-      <ion-label>Conceptos Principales</ion-label>
-    </ion-list-header>
+  <div class="section-title">
+    <ion-icon name="book-outline"></ion-icon>
+    <h2>Conceptos Principales</h2>
+  </div>
 
-    <ion-item *ngFor="let seccion of secciones">
-      <ion-icon [name]="seccion.icono" slot="start" color="primary"></ion-icon>
+  <ion-list class="custom-list">
+    <ion-item *ngFor="let seccion of secciones" detail="true">
+      <ion-icon [name]="seccion.icono" slot="start" color="first"></ion-icon>
       <ion-label>
         <h2>{{ seccion.titulo }}</h2>
         <p>{{ seccion.contenido }}</p>
@@ -42,32 +59,38 @@
     </ion-item>
   </ion-list>
 
-  <ion-list>
-    <ion-list-header>
-      <ion-label>Preguntas Frecuentes</ion-label>
-    </ion-list-header>
+  <div class="section-title">
+    <ion-icon name="help-circle-outline"></ion-icon>
+    <h2>Preguntas Frecuentes</h2>
+  </div>
 
-    <ion-accordion-group>
-      <ion-accordion *ngFor="let faq of faqs; let i = index" [value]="'faq-' + i">
-        <ion-item slot="header">
-          <ion-label>{{ faq.pregunta }}</ion-label>
-        </ion-item>
-        <div slot="content" class="ion-padding">
-          <p>{{ faq.respuesta }}</p>
-        </div>
-      </ion-accordion>
-    </ion-accordion-group>
-  </ion-list>
+  <ion-accordion-group class="custom-accordion">
+    <ion-accordion *ngFor="let faq of faqs; let i = index" [value]="'faq-' + i">
+      <ion-item slot="header" class="accordion-header">
+        <ion-label>{{ faq.pregunta }}</ion-label>
+      </ion-item>
+      <div slot="content" class="accordion-content">
+        <p>{{ faq.respuesta }}</p>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
 
-  <ion-card>
+  <ion-card class="contact-card">
     <ion-card-header>
+      <ion-icon name="mail-outline"></ion-icon>
       <ion-card-title>¿Necesitas más ayuda?</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <p>
         Si tienes dudas o problemas adicionales, no dudes en contactar con nuestro
-        equipo de soporte en <a href="mailto:soporte&#64;costsplitbd.com">soporte&#64;costsplitbd.com</a>
+        equipo de soporte en:
       </p>
+      <a href="mailto:soporte@costsplitbd.com" class="mail-link">
+        <ion-button expand="block" color="first">
+          <ion-icon name="mail" slot="start"></ion-icon>
+          <!--soporte@costsplitbd.com-->
+        </ion-button>
+      </a>
     </ion-card-content>
   </ion-card>
 </ion-content>

@@ -29,6 +29,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/profile/profile.component').then((m) => m.ProfileComponent),
     canActivate: [authGuard],
   },
+  {
+    path: 'amigos',
+    loadComponent: () => import('./features/amigos/amigos.component').then((m) => m.AmigosComponent),
+    canActivate: [authGuard],
+  },
   // Rutas de grupos (añadidas)
   {
     path: 'grupos',

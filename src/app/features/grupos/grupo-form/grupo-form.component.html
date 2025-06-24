@@ -1,52 +1,90 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/grupos"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Crear nuevo grupo</ion-title>
-  </ion-toolbar>
-</ion-header>
+
 
 <ion-content class="ion-padding">
   <app-loading *ngIf="isLoading"></app-loading>
   <app-error-message *ngIf="errorMessage" [message]="errorMessage"></app-error-message>
 
   <form [formGroup]="grupoForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading">
-    <ion-list lines="full">
-      <ion-item>
-        <ion-label position="floating">Nombre del grupo*</ion-label>
+    <ion-list lines="none">
+      <!-- Nombre del grupo -->
+      <ion-item [class.has-error]="grupoForm.get('nombre')?.touched && grupoForm.get('nombre')?.invalid">
+        <ion-label position="stacked" class="always-visible">Nombre del grupo*</ion-label>
         <ion-input
           formControlName="nombre"
           type="text"
+          placeholder="Ej: Viaje a Barcelona"
           required>
         </ion-input>
       </ion-item>
-      <ion-note slot="error" *ngIf="grupoForm.get('nombre')?.touched && grupoForm.get('nombre')?.errors?.['required']">
-        El nombre es obligatorio
-      </ion-note>
-      <ion-note slot="error" *ngIf="grupoForm.get('nombre')?.touched && grupoForm.get('nombre')?.errors?.['minlength']">
-        El nombre debe tener al menos 3 caracteres
-      </ion-note>
+      <div class="error-container">
+        <ion-note class="error-message" *ngIf="grupoForm.get('nombre')?.touched && grupoForm.get('nombre')?.errors?.['required']">
+          El nombre es obligatorio
+        </ion-note>
+        <ion-note class="error-message" *ngIf="grupoForm.get('nombre')?.touched && grupoForm.get('nombre')?.errors?.['minlength']">
+          El nombre debe tener al menos 3 caracteres
+        </ion-note>
+      </div>
 
-      <ion-item>
-        <ion-label position="floating">Descripción*</ion-label>
+      <!-- Descripción -->
+      <ion-item [class.has-error]="grupoForm.get('descripcion')?.touched && grupoForm.get('descripcion')?.invalid">
+        <ion-label position="stacked" class="always-visible">Descripción*</ion-label>
         <ion-textarea
           formControlName="descripcion"
-          rows="4"
+          rows="3"
+          placeholder="Describe el propósito de este grupo..."
           required>
         </ion-textarea>
       </ion-item>
-      <ion-note slot="error" *ngIf="grupoForm.get('descripcion')?.touched && grupoForm.get('descripcion')?.errors?.['required']">
-        La descripción es obligatoria
-      </ion-note>
+      <div class="error-container">
+        <ion-note class="error-message" *ngIf="grupoForm.get('descripcion')?.touched && grupoForm.get('descripcion')?.errors?.['required']">
+          La descripción es obligatoria
+        </ion-note>
+      </div>
 
-      <ion-item>
-        <ion-label position="floating">URL de imagen</ion-label>
+      <!-- Selector de método de imagen con mejor contraste -->
+      <div class="image-method-section">
+        <h4 class="image-section-title">Imagen del grupo</h4>
+        <div class="radio-group-horizontal">
+          <ion-radio-group [(ngModel)]="metodoImagen" (ionChange)="cambiarMetodoImagen()" [ngModelOptions]="{standalone: true}">
+            <div class="radio-container">
+              <ion-item lines="none" class="radio-item">
+                <ion-radio slot="start" value="url"></ion-radio>
+                <ion-label>URL</ion-label>
+              </ion-item>
+              <ion-item lines="none" class="radio-item">
+                <ion-radio slot="start" value="local"></ion-radio>
+                <ion-label>Local</ion-label>
+              </ion-item>
+            </div>
+          </ion-radio-group>
+        </div>
+      </div>
+
+      <!-- Input para URL de imagen -->
+      <ion-item *ngIf="metodoImagen === 'url'">
+        <ion-label position="stacked" class="always-visible">URL de imagen</ion-label>
         <ion-input
           formControlName="imagenUrl"
-          type="text">
+          type="text"
+          placeholder="https://ejemplo.com/imagen.jpg">
         </ion-input>
       </ion-item>
+
+      <!-- Input para imagen local -->
+      <ion-item *ngIf="metodoImagen === 'local'" class="file-input-item">
+        <ion-label position="stacked" class="always-visible">Seleccionar imagen</ion-label>
+        <input
+          type="file"
+          accept="image/*"
+          (change)="onFileSelected($event)"
+          class="file-input">
+      </ion-item>
+
+      <!-- Vista previa de la imagen -->
+      <div *ngIf="(metodoImagen === 'local' && previewImageUrl) || (metodoImagen === 'url' && grupoForm.value.imagenUrl)" class="image-preview">
+        <h5>Vista previa</h5>
+        <img [src]="metodoImagen === 'local' ? previewImageUrl : grupoForm.value.imagenUrl" alt="Vista previa">
+      </div>
     </ion-list>
 
     <ion-card class="participantes-card">
@@ -54,7 +92,7 @@
         <ion-card-title>Añadir participantes</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-list>
+        <ion-list *ngIf="usuarios.length > 0">
           <ion-item *ngFor="let usuario of usuarios">
             <ion-avatar slot="start">
               <img [src]="usuario.urlImg || 'assets/default-avatar.png'" alt="Avatar">
@@ -69,20 +107,25 @@
               (ionChange)="toggleParticipante(usuario.id)">
             </ion-checkbox>
           </ion-item>
-
-          <ion-item *ngIf="usuarios.length === 0">
-            <ion-label class="ion-text-center">
-              No hay usuarios disponibles para añadir
-            </ion-label>
-          </ion-item>
         </ion-list>
+
+        <div *ngIf="usuarios.length === 0" class="empty-friends">
+          <ion-icon name="people-outline" size="large" class="icon-botton"></ion-icon>
+          <h3>No tienes amigos para añadir</h3>
+          <p>Primero necesitas añadir amigos para poder invitarlos a tu grupo</p>
+          <ion-button routerLink="/amigos" class="add-friends-button">
+            <ion-icon name="person-add-outline" slot="start"></ion-icon>
+            Añadir amigos
+          </ion-button>
+        </div>
       </ion-card-content>
     </ion-card>
 
-    <div class="ion-padding">
+    <div class="action-buttons">
       <ion-button
         expand="block"
         type="submit"
+        color="first"
         [disabled]="grupoForm.invalid">
         Crear grupo
       </ion-button>

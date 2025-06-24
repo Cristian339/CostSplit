@@ -12,6 +12,14 @@ import { GrupoDTO } from '../models/grupo.model';
 import { TipoGasto, MetodoPago, MetodoReparticion } from '../models/enums';
 import { Divisa } from '../models/divisa.model';
 
+// Importación de iconos
+import { addIcons } from 'ionicons';
+import {
+  peopleOutline, personCircleOutline, chevronForwardOutline, addCircleOutline,
+  barChartOutline, personOutline, helpCircleOutline, add, restaurant, car,
+  bed, gameController, pricetag, menuOutline
+} from 'ionicons/icons';
+
 // Registra elementos de Swiper
 import { register } from 'swiper/element/bundle';
 register();
@@ -37,7 +45,24 @@ export class HomeComponent implements OnInit {
     private gastoService: GastoService,
     private balanceService: BalanceService,
     private router: Router
-  ) {}
+  ) {
+    addIcons({
+      'people-outline': peopleOutline,
+      'person-circle-outline': personCircleOutline,
+      'chevron-forward-outline': chevronForwardOutline,
+      'add-circle-outline': addCircleOutline,
+      'bar-chart-outline': barChartOutline,
+      'person-outline': personOutline,
+      'help-circle-outline': helpCircleOutline,
+      'add': add,
+      'restaurant': restaurant,
+      'car': car,
+      'bed': bed,
+      'game-controller': gameController,
+      'pricetag': pricetag,
+      'menu-outline': menuOutline
+    });
+  }
 
   ngOnInit() {
     this.cargarDatos();

@@ -1,0 +1,103 @@
+<ion-header>
+  <ion-toolbar color="first">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mis Amigos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="amigos-content">
+  <div class="header-banner">
+    <h1>Amigos</h1>
+    <p>Gestiona tus contactos para dividir gastos fácilmente</p>
+  </div>
+
+  <div class="search-section">
+    <ion-card class="search-card">
+      <ion-card-content>
+        <div class="search-bar">
+          <ion-searchbar
+            [(ngModel)]="searchTerm"
+            placeholder="Buscar por nombre o email"
+            (ionInput)="buscarUsuarios()"
+            animated
+            color="first"
+            class="custom-searchbar">
+          </ion-searchbar>
+        </div>
+
+        <div class="search-results" *ngIf="usuariosSugeridos.length > 0">
+          <h3>Resultados de búsqueda</h3>
+          <ion-list lines="full">
+            <ion-item *ngFor="let usuario of usuariosSugeridos" class="usuario-item">
+              <div class="usuario-avatar" slot="start">
+                <ion-icon name="person" *ngIf="!usuario.urlImg"></ion-icon>
+                <img [src]="usuario.urlImg" *ngIf="usuario.urlImg" alt="Foto de perfil">
+              </div>
+              <ion-label>
+                <h2>{{ usuario.nombre }}</h2>
+                <p>{{ usuario.email }}</p>
+              </ion-label>
+              <ion-button slot="end" (click)="agregarAmigo(usuario)" color="first" fill="clear">
+                <ion-icon name="person-add"></ion-icon>
+                Agregar
+              </ion-button>
+            </ion-item>
+          </ion-list>
+        </div>
+
+        <div class="search-empty" *ngIf="searchTerm.trim().length >= 3 && usuariosSugeridos.length === 0">
+          <ion-icon name="search-outline"></ion-icon>
+          <p>No se encontraron usuarios con ese criterio</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div class="friends-section">
+    <div class="section-title">
+      <ion-icon name="people"></ion-icon>
+      <h2>Mis Amigos</h2>
+    </div>
+
+    <ng-container *ngIf="!isLoading; else loadingTemplate">
+      <ng-container *ngIf="amigos.length > 0; else emptyFriends">
+        <div class="friends-list">
+          <ion-card class="friend-card" *ngFor="let amigo of amigos">
+            <div class="friend-header">
+              <div class="friend-avatar">
+                <ion-icon name="person" *ngIf="!amigo.urlImg"></ion-icon>
+                <img [src]="amigo.urlImg" *ngIf="amigo.urlImg" alt="Foto de perfil">
+              </div>
+              <div class="friend-info">
+                <h3>{{ amigo.nombre }}</h3>
+                <p>{{ amigo.email }}</p>
+              </div>
+              <div class="friend-actions">
+                <ion-button fill="clear" color="danger" (click)="confirmarEliminarAmigo(amigo)">
+                  <ion-icon name="trash" slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+          </ion-card>
+        </div>
+      </ng-container>
+
+      <ng-template #emptyFriends>
+        <div class="empty-state">
+          <ion-icon name="people-outline"></ion-icon>
+          <h3>No tienes amigos agregados</h3>
+          <p>Busca usuarios y agrégalos como amigos para dividir gastos</p>
+        </div>
+      </ng-template>
+    </ng-container>
+
+    <ng-template #loadingTemplate>
+      <div class="loader-container">
+        <ion-spinner name="circles" color="first"></ion-spinner>
+        <p>Cargando tus amigos...</p>
+      </div>
+    </ng-template>
+  </div>
+</ion-content>

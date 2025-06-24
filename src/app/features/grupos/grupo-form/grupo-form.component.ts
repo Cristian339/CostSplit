@@ -3,11 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { GrupoService, CrearGrupoDTO } from '../../../services/grupo.service';
+import { GrupoService } from '../../../services/grupo.service';
 import { AuthService } from '../../../services/auth.service';
 import { UsuarioService } from '../../../services/usuario.service';
+import { ImageService } from '../../../services/image.service';
 import { LoadingComponent } from '../../../components/loading/loading.component';
 import { ErrorMessageComponent } from '../../../components/error-message/error-message.component';
+import { ToastService } from '../../../services/toast.service';
+import { addIcons } from "ionicons";
+import { ImageResponse } from '../../../models/image-response.model';
+import {
+  peopleOutline,
+  personAddOutline
+} from "ionicons/icons";
+
 
 @Component({
   selector: 'app-grupo-form',
@@ -30,13 +39,25 @@ export class GrupoFormComponent implements OnInit {
   usuarios: any[] = [];
   selectedParticipantes: number[] = [];
 
+  // Propiedades para la subida de imágenes
+  metodoImagen: string = 'url';
+  selectedFile: File | null = null;
+  previewImageUrl: string | ArrayBuffer | null = null;
+
   constructor(
     private formBuilder: FormBuilder,
     private grupoService: GrupoService,
     private authService: AuthService,
     private usuarioService: UsuarioService,
-    private router: Router
-  ) {}
+    private imageService: ImageService,
+    private router: Router,
+    private toastService: ToastService
+  ) {
+    addIcons({
+      'person-add-outline': personAddOutline,
+      'people-outline': peopleOutline,
+    });
+  }
 
   ngOnInit() {
     this.initForm();
@@ -53,15 +74,26 @@ export class GrupoFormComponent implements OnInit {
 
   cargarUsuarios() {
     this.isLoading = true;
-    this.usuarioService.obtenerUsuarios().subscribe({
-      next: (usuarios) => {
-        this.usuarios = usuarios.filter(u => u.id !== this.authService.getCurrentUser()?.id);
+
+    // Obtener el ID del usuario actual
+    const currentUserId = this.authService.getCurrentUser()?.id;
+
+    if (!currentUserId) {
+      this.isLoading = false;
+      return;
+    }
+
+    // Modificar para cargar solo amigos en lugar de todos los usuarios
+    this.usuarioService.listarAmigos(currentUserId).subscribe({
+      next: (amigos) => {
+        this.usuarios = amigos || [];
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Error al cargar usuarios', err);
-        this.errorMessage = 'No se pudieron cargar los usuarios';
+        console.error('Error al cargar amigos', err);
+        this.errorMessage = 'No se pudieron cargar tus amigos';
         this.isLoading = false;
+        this.toastService.error('No se pudieron cargar tus amigos');
       }
     });
   }
@@ -79,55 +111,107 @@ export class GrupoFormComponent implements OnInit {
     return this.selectedParticipantes.includes(userId);
   }
 
+  // Método para cambiar entre métodos de imagen
+  cambiarMetodoImagen() {
+    if (this.metodoImagen === 'url') {
+      this.selectedFile = null;
+      this.previewImageUrl = null;
+    } else {
+      this.grupoForm.patchValue({
+        imagenUrl: ''
+      });
+    }
+  }
+
+  // Método para manejar la selección de archivos
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.previewImageUrl = e.target?.result || null;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   onSubmit() {
     if (this.grupoForm.invalid) {
-      Object.keys(this.grupoForm.controls).forEach(key => {
-        const controlErrors = this.grupoForm.get(key)?.errors;
-        if (controlErrors) {
-          console.log(`Error en ${key}:`, controlErrors);
-        }
-      });
+      this.marcarCamposTocados();
       return;
     }
 
+    // Obtener el usuario actual
     const currentUser = this.authService.getCurrentUser();
-    if (!currentUser || !currentUser.id) {
-      this.errorMessage = 'Debes iniciar sesión para crear un grupo';
+
+    // Verificar que exista el ID de usuario
+    if (!currentUser || typeof currentUser.id !== 'number') {
+      this.toastService.error('No se pudo obtener el ID de usuario');
       return;
     }
 
-    // Usar casting a any para evitar problemas de tipo temporalmente
-    const grupoData: any = {
+    // Crear objeto de datos para el backend
+    const grupoData = {
       nombre: this.grupoForm.value.nombre,
       descripcion: this.grupoForm.value.descripcion,
-      // Probar con diferentes nombres de propiedades que podrían estar en CrearGrupoDTO
-      usuariosIds: [...this.selectedParticipantes] // Alternativa a participantesIds
+      imagenUrl: this.metodoImagen === 'url' ? this.grupoForm.value.imagenUrl : null,
+      idsParticipantes: [...this.selectedParticipantes]
     };
 
-    // Si tienes el campo imagenUrl en el formulario, agrégalo
-    if (this.grupoForm.value.imagenUrl) {
-      grupoData.imagen = this.grupoForm.value.imagenUrl; // Alternativa a imagenUrl
-    }
-
     this.isLoading = true;
-    // Asegurar que currentUser.id no sea undefined
-    const userId: number = currentUser.id;
+    const userId = currentUser.id; // Ya verificamos que es un número
 
+    // Si es imagen local, primero subir la imagen
+    if (this.metodoImagen === 'local' && this.selectedFile) {
+      const formData = new FormData();
+      formData.append('file', this.selectedFile);
+
+      // Usar el nuevo ImageService en lugar de GrupoService
+      this.imageService.subirImagen(formData).subscribe({
+        next: (response: ImageResponse) => {
+          grupoData.imagenUrl = response.url;
+          this.crearGrupo(userId, grupoData);
+        },
+        error: (err: any) => {
+          console.error('Error al subir la imagen', err);
+          this.isLoading = false;
+          this.toastService.error(err.error?.mensaje || 'No se pudo subir la imagen');
+        }
+      });
+    } else {
+      this.crearGrupo(userId, grupoData);
+    }
+  }
+
+  crearGrupo(userId: number, grupoData: any) {
     this.grupoService.crearGrupo(grupoData, userId).subscribe({
       next: (grupo) => {
         console.log('Grupo creado exitosamente', grupo);
         this.isLoading = false;
+        this.toastService.success('Grupo creado exitosamente');
         this.router.navigate(['/grupos']);
       },
       error: (err) => {
         console.error('Error al crear el grupo', err);
-        this.errorMessage = 'No se pudo crear el grupo. Por favor, inténtalo de nuevo.';
         this.isLoading = false;
+        this.toastService.error(err.error?.mensaje || 'No se pudo crear el grupo. Por favor, inténtalo de nuevo.');
       }
     });
   }
 
+  marcarCamposTocados() {
+    Object.keys(this.grupoForm.controls).forEach(key => {
+      this.grupoForm.get(key)?.markAsTouched();
+    });
+    this.toastService.warning('Por favor, completa todos los campos obligatorios');
+  }
+
   cancelar() {
-    this.router.navigate(['/grupos']);
+    // Asegurarse de navegar correctamente a grupos sin redirigir al login
+    this.router.navigate(['/home'], {
+      skipLocationChange: false,
+      replaceUrl: true
+    });
   }
 }

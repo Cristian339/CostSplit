@@ -45,3 +45,34 @@
   margin: 0;
   padding: 0;
 }
+
+
+// Estilos para los toasts personalizados
+.toast-success {
+  --border-radius: 10px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+  font-family: var(--ion-font-family);
+}
+
+.toast-error {
+  --border-radius: 10px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+  font-family: var(--ion-font-family);
+}
+
+.toast-warning {
+  --border-radius: 10px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+  font-family: var(--ion-font-family);
+}
+
+.toast-info {
+  --border-radius: 10px;
+  --background: var(--ion-color-first);
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+  font-family: var(--ion-font-family);
+}

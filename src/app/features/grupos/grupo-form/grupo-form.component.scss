@@ -1,43 +1,278 @@
 ion-content {
-  --background: #f5f5f5;
+  --background: linear-gradient(135deg, var(--ion-color-first) 0%, var(--ion-color-secondary) 100%);
 }
 
 form {
-  background-color: #ffffff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: var(--ion-color-tertiary);
+  border-radius: 20px;
+  padding: 30px;
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+  animation: fadeInUp 0.6s ease-out;
 }
 
 ion-item {
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --inner-padding-end: 0;
+  --background: rgba(255, 255, 255, 0.8);
+  --border-color: var(--ion-color-secondary);
+  --border-radius: 10px;
+  --highlight-color-focused: var(--ion-color-first);
+  margin-bottom: 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+  --min-height: 52px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  --inner-padding-end: 16px;
 }
 
-ion-note[slot="error"] {
+ion-item.has-error {
+  --border-color: var(--ion-color-danger);
+  --border-width: 2px;
+}
+
+ion-label {
+  --color: var(--ion-color-first) !important;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* Etiquetas de campo con tipografía de títulos y tamaño uniforme */
+ion-label.always-visible,
+ion-label[position="stacked"] {
+  margin-bottom: 12px !important;
+  transform: scale(1.05) !important;
+  font-weight: 700;
+  opacity: 1 !important;
+  display: block !important;
+  color: var(--ion-color-first) !important;
+  font-family: var(--ion-font-family-headers) !important;
+  font-size: 22px !important;
+}
+
+ion-input, ion-textarea {
+  --color: var(--ion-color-first);
+  --placeholder-color: var(--ion-color-secondary);
+  --placeholder-opacity: 0.7;
+  font-size: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  --padding-start: 16px;
+  margin-top: 10px;
+}
+
+/* Contenedor para mensajes de error */
+.error-container {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+
+.error-message {
   font-size: 0.9rem;
   color: var(--ion-color-danger);
-  padding-left: 16px;
+  display: block;
+}
+
+ion-list {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* Sección de imagen con mejor estilo */
+.image-method-section {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+}
+
+/* Título "Imagen del grupo" más grande */
+.image-section-title {
+  color: var(--ion-color-first);
+  font-weight: 700;
+  font-size: 22px;
+  margin-bottom: 15px;
+  padding-left: 5px;
+  font-family: var(--ion-font-family-headers) !important;
+}
+
+/* Radio buttons en horizontal */
+.radio-group-horizontal {
+  width: 100%;
+}
+
+/* Contenedor de radio buttons con más separación */
+.radio-container {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  padding: 5px 0;
+}
+
+.radio-item {
+  --background: transparent;
+  --border-width: 0;
+  --inner-padding-end: 8px; /* Más espacio interno */
+  --padding-start: 0;
+  margin: 0;
+  box-shadow: none;
+  flex: 1;
+}
+
+/* Mejora para los radio buttons - más visibles */
+ion-radio {
+  --color: var(--ion-color-first); /* Color del borde cuando no está seleccionado */
+  --color-checked: var(--ion-color-first);
+  --border-width: 2px;
+  margin-right: 8px; /* Espacio entre el radio y el texto */
 }
 
 .participantes-card {
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  background-color: var(--ion-color-tertiary);
 }
 
-ion-button {
-  margin-top: 10px;
-  --border-radius: 8px;
-  height: 48px;
+
+
+ion-card-title {
+  font-family: var(--ion-font-family-headers) !important;
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  color: var(--ion-color-tertiary) !important;
+  padding: 10px 0;
+  text-align: center;
 }
 
 ion-checkbox {
   --size: 24px;
-  --background-checked: var(--ion-color-primary);
+  --background-checked: var(--ion-color-first);
+  --border-color: var(--ion-color-secondary);
+  --border-color-checked: var(--ion-color-first);
+  --checkmark-color: var(--ion-color-tertiary);
 }
 
-ion-card-title {
-  font-size: 1.2rem;
+ion-button {
+  margin-top: 10px;
+  --border-radius: 12px;
+  --box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   font-weight: 600;
+  height: 48px;
+  font-size: 16px;
+  text-transform: none;
+}
+
+ion-button:hover:not(.button-disabled) {
+  --box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  transition: transform 0.3s ease;
+}
+
+.empty-friends {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+
+  ion-icon {
+    font-size: 72px;
+    opacity: 0.7;
+
+    color: var(--ion-color-first);
+  }
+  .icon-botton{
+    margin-bottom: 24px;
+  }
+
+  h3 {
+    font-size: 30px;
+    margin-bottom: 12px;
+    color: var(--ion-color-first);
+    font-family: var(--ion-font-family-headers) !important;
+    font-weight: 700;
+  }
+
+  p {
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: var(--ion-color-secondary);
+    max-width: 500px;
+    line-height: 1.5;
+  }
+}
+
+/* Mejora del botón "Añadir amigos" */
+.add-friends-button {
+  --background: var(--ion-color-first) !important;
+  --color: #ffffff !important; /* Texto blanco */
+  width: 240px !important; /* Más ancho horizontalmente */
+  margin: 0 auto !important;
+  display: block !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-align: center !important;
+}
+
+/* Color blanco para el icono y tamaño reducido */
+.add-friends-button ion-icon {
+  color: #ffffff !important;
+  margin-right: 8px;
+  font-size: 20px !important; /* Tamaño del icono reducido */
+}
+
+/* Estilo para el botón "Crear grupo" */
+.action-buttons ion-button[type="submit"] {
+  --background: var(--ion-color-first) !important;
+  --color: #ffffff !important; /* Texto blanco */
+}
+
+/* Estilos para la vista previa y subida de imágenes */
+.image-preview {
+  text-align: center;
+  margin: 15px 0;
+  padding: 10px;
+
+  h5 {
+    font-size: 16px;
+    color: var(--ion-color-first);
+    margin-bottom: 10px;
+  }
+
+  img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    object-fit: cover;
+  }
+}
+
+.file-input-item {
+  position: relative;
+
+  .file-input {
+    padding: 8px 0;
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }

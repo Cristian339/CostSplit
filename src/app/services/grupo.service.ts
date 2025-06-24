@@ -1,13 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-export interface GrupoDTO {
-  id?: number;
-  nombre: string;
-  descripcion?: string;
-  // Otros campos necesarios
-}
+import { GrupoDTO } from '../models/grupo.model';
+import { ImageResponse } from '../models/image-response.model';
 
 export interface GrupoDetalladoDTO extends GrupoDTO {
   participantes?: any[];
@@ -17,13 +12,13 @@ export interface GrupoDetalladoDTO extends GrupoDTO {
 export interface CrearGrupoDTO {
   nombre: string;
   descripcion?: string;
-  // Otros campos necesarios
 }
 
 export interface AniadirParticipanteDTO {
   idsUsuarios: number[];
   // Otros campos si son necesarios
 }
+
 
 @Injectable({
   providedIn: 'root'
@@ -55,5 +50,9 @@ export class GrupoService {
 
   eliminarParticipantes(idGrupo: number, aniadirParticipanteDTO: AniadirParticipanteDTO): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${idGrupo}/participantes`, { body: aniadirParticipanteDTO });
+  }
+
+  subirImagen(formData: FormData): Observable<ImageResponse> {
+    return this.http.post<ImageResponse>(`${this.apiUrl}/upload`, formData);
   }
 }
