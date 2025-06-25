@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
 import { Usuario } from '../models/usuario.model';
 import { LoginDTO } from '../models/login.model';
+import { UsuarioId } from '../models/UsuarioId.model';
 import { RecuperarPassword } from '../models/RecuperarPassword.model';
 import { VerificarCodigo } from '../models/VerificarCodigo.model';
 import { CambiarPassword } from '../models/CambiarPassword.model';
@@ -26,10 +26,17 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/login`, loginDTO)
       .pipe(
         tap(response => {
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('refreshToken', response.refreshToken || '');
-          localStorage.setItem('user', JSON.stringify(response.user));
-          this.currentUserSubject.next(response.user);
+          const usuario = response.data; // Ajusta según la respuesta real
+          if (usuario && usuario.id) {
+            localStorage.setItem('currentUserId', usuario.id.toString());
+            this.currentUserSubject.next({ id: usuario.id } as UsuarioId);
+          } else {
+            localStorage.removeItem('currentUserId');
+            this.currentUserSubject.next(null);
+          }
+          // Guardar token si existe
+          if (response.token) localStorage.setItem('token', response.token);
+          if (response.refreshToken) localStorage.setItem('refreshToken', response.refreshToken);
         }),
         catchError(error => {
           console.error('Error en login:', error);
@@ -38,6 +45,14 @@ export class AuthService {
       );
   }
 
+// Cambia también el método para obtener el usuario:
+  private getUserFromStorage(): Usuario | null {
+    const idStr = localStorage.getItem('currentUserId');
+    if (idStr) {
+      return { id: Number(idStr) } as Usuario;
+    }
+    return null;
+  }
   registro(usuarioDTO: any): Observable<Usuario> {
     return this.http.post<Usuario>(`${this.apiUrl}/registro`, usuarioDTO)
       .pipe(
@@ -51,7 +66,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
+    localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
   }
 
@@ -102,15 +117,5 @@ export class AuthService {
       );
   }
 
-  private getUserFromStorage(): Usuario | null {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        return JSON.parse(userStr);
-      } catch (e) {
-        return null;
-      }
-    }
-    return null;
-  }
+
 }

@@ -152,7 +152,7 @@ export class LoginComponent implements OnInit {
           window.location.href = this.returnUrl;
         }, 1000);
       },
-      error: (error) => {
+      error: (error: any) => {
         const errorMessage = error.error?.token || 'Error al iniciar sesión. Verifica tus credenciales e intenta de nuevo.';
         this.showError(errorMessage);
         console.error('Error de login:', error);

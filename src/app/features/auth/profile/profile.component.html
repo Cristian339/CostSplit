@@ -1,70 +1,91 @@
-<ion-header>
-  <ion-toolbar color="primary">
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary" class="transparent-toolbar">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Mi Perfil</ion-title>
+    <ion-title class="ion-text-center animate__animated animate__fadeIn">Mi Perfil</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="toggleEditing()">
-        <ion-icon [name]="isEditing ? 'close-outline' : 'create-outline'"></ion-icon>
+      <ion-button (click)="toggleEditing()" class="edit-button">
+        <ion-icon [name]="isEditing ? 'close-outline' : 'create-outline'" class="animate__animated" [class.animate__pulse]="isEditing"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <div *ngIf="usuario" class="profile-container">
+<ion-content class="ion-padding profile-content">
+  <div class="loader-container" *ngIf="isLoadingInitial">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Cargando perfil...</p>
+  </div>
+
+  <div *ngIf="usuario && !isLoadingInitial" class="profile-container animate__animated animate__fadeIn">
     <div class="profile-header">
-      <ion-avatar>
-        <img [src]="usuario.urlImg || 'assets/default-avatar.png'" alt="Foto de perfil">
-      </ion-avatar>
-      <h1>{{ usuario.nombre }} {{ usuario.apellido }}</h1>
-      <p>{{ usuario.email }}</p>
+      <div class="avatar-container">
+        <ion-avatar class="profile-avatar">
+          <img [src]="usuario.urlImg || 'assets/default-avatar.png'" alt="Foto de perfil">
+          <div class="avatar-edit-button" *ngIf="isEditing" (click)="seleccionarImagen()">
+            <ion-icon name="camera"></ion-icon>
+          </div>
+        </ion-avatar>
+        <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none" accept="image/*">
+      </div>
+
+      <h1 class="profile-name">{{ usuario.nombre }} {{ usuario.apellido }}</h1>
+      <p class="profile-email">{{ usuario.email }}</p>
     </div>
 
-    <form [formGroup]="profileForm">
-      <ion-list>
-        <ion-item>
-          <ion-label position="floating">Nombre</ion-label>
-          <ion-input formControlName="nombre" type="text"></ion-input>
-        </ion-item>
+    <form [formGroup]="profileForm" class="animate__animated" [class.animate__fadeIn]="isEditing">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Información Personal</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item lines="full" class="form-item">
+              <ion-label position="floating">Nombre</ion-label>
+              <ion-input formControlName="nombre" type="text"></ion-input>
+            </ion-item>
 
-        <ion-item>
-          <ion-label position="floating">Apellido</ion-label>
-          <ion-input formControlName="apellido" type="text"></ion-input>
-        </ion-item>
+            <ion-item lines="full" class="form-item">
+              <ion-label position="floating">Apellido</ion-label>
+              <ion-input formControlName="apellido" type="text"></ion-input>
+            </ion-item>
 
-        <ion-item>
-          <ion-label position="floating">Email</ion-label>
-          <ion-input formControlName="email" type="email"></ion-input>
-        </ion-item>
+            <ion-item lines="full" class="form-item">
+              <ion-label position="floating">Email</ion-label>
+              <ion-input formControlName="email" type="email"></ion-input>
+            </ion-item>
 
-        <ion-item>
-          <ion-label position="floating">URL de la imagen</ion-label>
-          <ion-input formControlName="urlImg" type="text"></ion-input>
-        </ion-item>
-      </ion-list>
+            <ion-item lines="none" class="form-item" *ngIf="isEditing">
+              <ion-label position="floating">URL de la imagen</ion-label>
+              <ion-input formControlName="urlImg" type="text"></ion-input>
+            </ion-item>
+          </ion-list>
 
-      <div *ngIf="isEditing" class="ion-padding">
-        <ion-button expand="block" (click)="guardarCambios()" [disabled]="profileForm.invalid || isLoading">
-          <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
-          <span *ngIf="!isLoading">Guardar Cambios</span>
-        </ion-button>
-      </div>
+          <div *ngIf="isEditing" class="ion-padding save-button-container">
+            <ion-button expand="block" (click)="guardarCambios()" [disabled]="profileForm.invalid || isLoading" class="save-button">
+              <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+              <span *ngIf="!isLoading">Guardar Cambios</span>
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
     </form>
 
-    <ion-card>
+    <ion-card class="security-card animate__animated animate__fadeIn">
       <ion-card-header>
         <ion-card-title>Seguridad</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-button expand="block" fill="outline" (click)="cambiarContrasena()">
+        <ion-button expand="block" fill="outline" (click)="cambiarContrasena()" class="password-button">
+          <ion-icon name="lock-closed" slot="start"></ion-icon>
           Cambiar Contraseña
         </ion-button>
       </ion-card-content>
     </ion-card>
 
-    <ion-button expand="block" color="danger" (click)="cerrarSesion()">
+    <ion-button expand="block" color="danger" (click)="cerrarSesion()" class="logout-button animate__animated animate__fadeIn">
+      <ion-icon name="log-out" slot="start"></ion-icon>
       Cerrar Sesión
     </ion-button>
   </div>

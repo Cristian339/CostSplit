@@ -24,8 +24,6 @@ interface GrupoSimple {
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    LoadingComponent,
-    ErrorMessageComponent
   ],
   templateUrl: './grupo-list.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

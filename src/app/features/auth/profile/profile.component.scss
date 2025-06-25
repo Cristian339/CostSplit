@@ -1,6 +1,61 @@
+:host {
+  --profile-primary: var(--ion-color-primary);
+  --profile-primary-shade: var(--ion-color-primary-shade);
+  --profile-secondary: var(--ion-color-secondary);
+  --profile-light: var(--ion-color-light);
+  --profile-medium: var(--ion-color-medium);
+}
+
+
+/* Clases de animación que usamos, definidas directamente */
+.animate__animated {
+  animation-duration: 1s;
+  animation-fill-mode: both;
+}
+
+.animate__fadeIn {
+  animation-name: fadeIn;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate__pulse {
+  animation-name: pulse;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+
+.transparent-toolbar {
+  --background: transparent;
+  --border-color: transparent;
+}
+
+.profile-content {
+  --background: linear-gradient(135deg, var(--ion-color-light) 0%, var(--ion-color-light-shade) 100%);
+}
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+
+  p {
+    margin-top: 1rem;
+    color: var(--profile-medium);
+  }
+}
+
 .profile-container {
   max-width: 600px;
   margin: 0 auto;
+  padding-top: 1rem;
 }
 
 .profile-header {
@@ -8,30 +63,197 @@
   flex-direction: column;
   align-items: center;
   margin-bottom: 2rem;
+  animation: fadeIn 0.5s ease;
+}
 
-  ion-avatar {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 1rem;
-    border: 3px solid var(--ion-color-primary);
+.avatar-container {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 3px solid var(--profile-primary);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
   }
 
-  h1 {
-    margin: 0.5rem 0;
-    font-weight: 600;
-    text-align: center;
+  img {
+    object-fit: cover;
+  }
+}
+
+.avatar-edit-button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: var(--profile-primary);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  animation: bounceIn 0.5s;
+
+  ion-icon {
+    color: white;
+    font-size: 20px;
   }
 
-  p {
-    margin: 0;
-    color: var(--ion-color-medium);
+  &:hover {
+    background: var(--profile-primary-shade);
   }
+}
+
+.profile-name {
+  margin: 1rem 0 0.2rem;
+  font-weight: 600;
+  font-size: 1.8rem;
+  color: var(--ion-color-dark);
+  text-align: center;
+}
+
+.profile-email {
+  margin: 0;
+  color: var(--profile-medium);
+  font-size: 1rem;
 }
 
 ion-card {
-  margin-top: 1.5rem;
+  border-radius: 15px;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  background: white;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  ion-card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  ion-card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--profile-primary);
+  }
 }
 
-ion-button[color="danger"] {
+.form-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 8px;
+
+  ion-label {
+    color: var(--profile-medium);
+  }
+
+  ion-input {
+    --padding-start: 12px;
+    border-radius: 8px;
+    --background: var(--profile-light);
+    margin-top: 4px;
+    --color: var(--ion-color-dark);
+
+    &:focus {
+      --background: rgba(var(--ion-color-primary-rgb), 0.05);
+    }
+  }
+}
+
+.save-button-container {
+  margin-top: 1rem;
+  animation: fadeInUp 0.5s;
+}
+
+.save-button {
+  --box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.4);
+  transition: all 0.2s ease;
+
+  &:hover:not(.button-disabled) {
+    transform: translateY(-2px);
+    --box-shadow: 0 6px 16px rgba(var(--ion-color-primary-rgb), 0.5);
+  }
+}
+
+.security-card {
+  margin-top: 1rem;
+}
+
+.password-button {
+  --border-color: var(--profile-primary);
+  --color: var(--profile-primary);
+  margin-top: 0.5rem;
+
+  &:hover {
+    --background: rgba(var(--ion-color-primary-rgb), 0.05);
+  }
+}
+
+.logout-button {
   margin-top: 2rem;
+  --box-shadow: none;
+  --background: var(--ion-color-danger);
+
+  &:hover {
+    --background: var(--ion-color-danger-shade);
+  }
+}
+
+.edit-button {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(0);
+    transition: transform 0.3s ease;
+  }
+
+  &:active::after {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Animaciones adicionales */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate__pulse {
+  animation: pulse 1s infinite;
+}
+
+@keyframes bounceIn {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
