@@ -25,7 +25,7 @@
       <div class="summary-card">
         <div>
           <h2>Resumen</h2>
-          <p>Tienes {{grupos.length}} grupos activos</p>
+          <!-- Si quieres mostrar el número de grupos, hazlo dentro de app-grupo-list -->
         </div>
         <ion-button fill="clear" (click)="verInformes()" color="tertiary">
           Ver informes
@@ -34,63 +34,14 @@
       </div>
     </div>
 
-    <!-- Sección de grupos con carrusel -->
-    <section class="section-container">
-      <div class="section-header">
-        <h2>Mis grupos</h2>
-        <ion-button fill="clear" (click)="nuevoGrupo()" color="secondary">
-          Nuevo
-          <ion-icon name="add-circle-outline" slot="end"></ion-icon>
-        </ion-button>
-      </div>
-
-      <div *ngIf="grupos.length === 0" class="empty-state">
-        <ion-icon name="people-outline" size="large"></ion-icon>
-        <h3>Aún no tienes grupos</h3>
-        <p>Crea un grupo para comenzar a dividir gastos con amigos</p>
-        <ion-button (click)="nuevoGrupo()" expand="block" color="secondary">
-          Crear mi primer grupo
-        </ion-button>
-      </div>
-
-      <!-- Carrusel de grupos usando el elemento swiper -->
-      <swiper-container *ngIf="grupos.length > 0"
-                        slides-per-view="1.2"
-                        space-between="20"
-                        centered-slides="true"
-                        class="grupos-carousel">
-        <swiper-slide *ngFor="let grupo of grupos">
-          <ion-card class="grupo-card" (click)="verGrupo(grupo.id!)">
-            <div class="grupo-card-header">
-              <ion-icon name="people-outline"></ion-icon>
-              <span>Creado el {{grupo.fechaCreacion | date:'dd MMM yyyy'}}</span>
-            </div>
-            <ion-card-header>
-              <ion-card-title>{{grupo.nombre}}</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              <p *ngIf="grupo.descripcion">{{grupo.descripcion}}</p>
-              <p *ngIf="!grupo.descripcion" class="no-descripcion">Sin descripción</p>
-
-              <div class="card-footer">
-                <ion-button fill="outline" size="small" color="secondary">
-                  Ver detalles
-                </ion-button>
-              </div>
-            </ion-card-content>
-          </ion-card>
-        </swiper-slide>
-      </swiper-container>
-    </section>
+    <!-- Lista y carrusel de grupos SIEMPRE visible -->
+    <app-grupo-list></app-grupo-list>
 
     <!-- Últimos gastos -->
     <section class="section-container" *ngIf="ultimosGastos.length > 0">
       <div class="section-header">
         <h2>Últimos gastos</h2>
-        <ion-button fill="clear" [routerLink]="['/grupos', grupos[0].id, 'gastos']" *ngIf="grupos.length > 0" color="secondary">
-          Ver todos
-          <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
-        </ion-button>
+        <!-- Botón "Ver todos" eliminado porque dependía de grupos[0] -->
       </div>
 
       <ion-card class="transparent-card">
@@ -132,6 +83,8 @@
       </div>
     </section>
   </div>
+
+
 
   <!-- Flotante para crear nuevo grupo -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">

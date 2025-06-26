@@ -28,6 +28,7 @@ export class GrupoService {
 
   constructor(private http: HttpClient) {}
 
+
   crearGrupo(crearGrupoDTO: CrearGrupoDTO, idUsuarioCreador: number): Observable<GrupoDTO> {
     return this.http.post<GrupoDTO>(`${this.apiUrl}?idUsuarioCreador=${idUsuarioCreador}`, crearGrupoDTO);
   }

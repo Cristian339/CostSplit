@@ -1,20 +1,16 @@
-// grupo-list.component.ts
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular';
 import { Router, RouterModule } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GrupoService } from '../../../services/grupo.service';
 import { AuthService } from '../../../services/auth.service';
-import { LoadingComponent } from '../../../components/loading/loading.component';
-import { ErrorMessageComponent } from '../../../components/error-message/error-message.component';
-
-interface GrupoSimple {
-  id: number;
-  nombre: string;
-  descripcion: string;
-}
-
+import { ToastService } from '../../../services/toast.service';
+import { UsuarioService } from '../../../services/usuario.service'; // Asegúrate de que la ruta es correcta
+import { addIcons } from 'ionicons';
+import {
+  peopleOutline,addCircleOutline,peopleCircleOutline
+} from 'ionicons/icons';
 @Component({
   selector: 'app-grupo-list',
   standalone: true,
@@ -26,44 +22,64 @@ interface GrupoSimple {
     RouterModule,
   ],
   templateUrl: './grupo-list.component.html',
+  styleUrls: ['./grupo-list.component.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class GrupoListComponent implements OnInit {
-  grupos: any[] = []; // Usar any[] para evitar conflictos de tipos
+  grupos: any[] = [];
   isLoading = false;
   errorMessage = '';
 
   constructor(
     private grupoService: GrupoService,
     private authService: AuthService,
+    private usuarioService: UsuarioService,
     private router: Router,
-    private toastController: ToastController
-  ) {}
+    private toastService: ToastService
+  ) {
+    addIcons({
+      'people-outline': peopleOutline,
+      'add-circle-outline': peopleOutline,
+      'people-circle-outline': peopleCircleOutline
+    });
+  }
 
   ngOnInit() {
+
     this.cargarGrupos();
   }
 
   cargarGrupos() {
     this.isLoading = true;
     this.errorMessage = '';
-    const userId = this.authService.getCurrentUser()?.id;
 
-    if (!userId) {
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    this.grupoService.listarGrupos(userId).subscribe({
-      next: (grupos) => {
-        this.grupos = grupos;
-        this.isLoading = false;
+    this.usuarioService.getUsuarioActualId().subscribe({
+      next: (userId) => {
+        this.grupoService.listarGrupos(userId).subscribe({
+          next: (grupos) => {
+            this.grupos = Array.isArray(grupos) ? grupos.map((g: any) => ({
+              id: g.id,
+              nombre: g.nombre,
+              descripcion: g.descripcion || '',
+              fechaCreacion: g.fechaCreacion
+            })) : [];
+            this.isLoading = false;
+          },
+          error: (error) => {
+            console.error('Error al cargar grupos:', error);
+            this.grupos = [];
+            this.isLoading = false;
+            this.errorMessage = 'Error al cargar grupos';
+            this.toastService.error('Error al cargar grupos');
+          }
+        });
       },
       error: (error) => {
-        console.error('Error cargando grupos:', error);
+        console.error('Error al obtener userId:', error);
         this.isLoading = false;
-        this.errorMessage = 'Error al cargar grupos';
-        this.mostrarToast('Error al cargar grupos', 'danger');
+        this.errorMessage = 'No se pudo obtener el usuario actual';
+        this.toastService.error('No se pudo obtener el usuario actual');
+        this.router.navigate(['/home']);
       }
     });
   }
@@ -81,14 +97,5 @@ export class GrupoListComponent implements OnInit {
 
   nuevoGrupo() {
     this.router.navigate(['/grupos/nuevo']);
-  }
-
-  async mostrarToast(mensaje: string, color: string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 2000,
-      color
-    });
-    toast.present();
   }
 }

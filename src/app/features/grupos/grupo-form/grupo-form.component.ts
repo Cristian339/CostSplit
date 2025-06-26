@@ -142,45 +142,61 @@ export class GrupoFormComponent implements OnInit {
       return;
     }
 
-    // Obtener el usuario actual
-    const currentUser = this.authService.getCurrentUser();
+    this.isLoading = true;
 
-    // Verificar que exista el ID de usuario
-    if (!currentUser || typeof currentUser.id !== 'number') {
-      this.toastService.error('No se pudo obtener el ID de usuario');
-      return;
-    }
+    // Intentar obtener el usuario actual
+    let currentUser = this.authService.getCurrentUser();
 
-    // Crear objeto de datos para el backend
-    const grupoData = {
-      nombre: this.grupoForm.value.nombre,
-      descripcion: this.grupoForm.value.descripcion,
-      imagenUrl: this.metodoImagen === 'url' ? this.grupoForm.value.imagenUrl : null,
-      idsParticipantes: [...this.selectedParticipantes]
+    const continuarConCreacion = (userId: number) => {
+      // Crear objeto de datos para el backend
+      const grupoData = {
+        nombre: this.grupoForm.value.nombre,
+        descripcion: this.grupoForm.value.descripcion,
+        imagenUrl: this.metodoImagen === 'url' ? this.grupoForm.value.imagenUrl : null,
+        idsParticipantes: [...this.selectedParticipantes]
+      };
+
+      // Si es imagen local, primero subir la imagen
+      if (this.metodoImagen === 'local' && this.selectedFile) {
+        const formData = new FormData();
+        formData.append('file', this.selectedFile);
+
+        this.imageService.subirImagen(formData).subscribe({
+          next: (response: ImageResponse) => {
+            grupoData.imagenUrl = response.url;
+            this.crearGrupo(userId, grupoData);
+          },
+          error: (err: any) => {
+            console.error('Error al subir la imagen', err);
+            this.isLoading = false;
+            this.toastService.error(err.error?.mensaje || 'No se pudo subir la imagen');
+          }
+        });
+      } else {
+        this.crearGrupo(userId, grupoData);
+      }
     };
 
-    this.isLoading = true;
-    const userId = currentUser.id; // Ya verificamos que es un número
-
-    // Si es imagen local, primero subir la imagen
-    if (this.metodoImagen === 'local' && this.selectedFile) {
-      const formData = new FormData();
-      formData.append('file', this.selectedFile);
-
-      // Usar el nuevo ImageService en lugar de GrupoService
-      this.imageService.subirImagen(formData).subscribe({
-        next: (response: ImageResponse) => {
-          grupoData.imagenUrl = response.url;
-          this.crearGrupo(userId, grupoData);
+    // Si el usuario está y tiene id, continuar
+    if (currentUser && typeof currentUser.id === 'number') {
+      continuarConCreacion(currentUser.id);
+    } else {
+      // Si no, obtener el usuario desde el backend
+      // ...
+      this.usuarioService.getUsuarioActualId().subscribe({
+        next: (usuarioId) => {
+          if (typeof usuarioId === 'number') {
+            continuarConCreacion(usuarioId);
+          } else {
+            this.isLoading = false;
+            this.toastService.error('No se pudo obtener el ID de usuario');
+          }
         },
-        error: (err: any) => {
-          console.error('Error al subir la imagen', err);
+        error: () => {
           this.isLoading = false;
-          this.toastService.error(err.error?.mensaje || 'No se pudo subir la imagen');
+          this.toastService.error('No se pudo obtener el ID de usuario');
         }
       });
-    } else {
-      this.crearGrupo(userId, grupoData);
     }
   }
 
@@ -190,7 +206,7 @@ export class GrupoFormComponent implements OnInit {
         console.log('Grupo creado exitosamente', grupo);
         this.isLoading = false;
         this.toastService.success('Grupo creado exitosamente');
-        this.router.navigate(['/grupos']);
+        this.router.navigate(['/home']);
       },
       error: (err) => {
         console.error('Error al crear el grupo', err);

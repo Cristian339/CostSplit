@@ -1,47 +1,53 @@
-<!--
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Mis Grupos</ion-title>
-    <ion-buttons slot="end">
-      <ion-button routerLink="/grupos/nuevo">
-        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-padding">
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-
-  <app-loading *ngIf="isLoading"></app-loading>
-  <app-error-message *ngIf="errorMessage" [message]="errorMessage" (retry)="cargarGrupos()"></app-error-message>
-
-  <ion-list *ngIf="grupos.length > 0 && !isLoading">
-    <ion-item *ngFor="let grupo of grupos" [routerLink]="['/grupos', grupo.id]" detail="true">
-      <ion-avatar slot="start" *ngIf="grupo.imagenUrl">
-        <img [src]="grupo.imagenUrl" alt="Grupo">
-      </ion-avatar>
-      <ion-icon *ngIf="!grupo.imagenUrl" name="people-outline" slot="start" size="large"></ion-icon>
-      <ion-label>
-        <h2>{{ grupo.nombre }}</h2>
-        <p *ngIf="grupo.descripcion">{{ grupo.descripcion }}</p>
-      </ion-label>
-    </ion-item>
-  </ion-list>
-
-  <div *ngIf="grupos.length === 0 && !isLoading && !errorMessage" class="empty-state">
-    <ion-icon name="people-outline" size="large"></ion-icon>
-    <h3>No tienes grupos todavía</h3>
-    <p>Crea un grupo para comenzar a compartir gastos</p>
-    <ion-button expand="block" routerLink="/grupos/nuevo">
-      <ion-icon name="add-outline" slot="start"></ion-icon>
-      Crear Grupo
+<section class="section-container">
+  <div class="section-header">
+    <h2>Mis grupos</h2>
+    <ion-button fill="clear" (click)="nuevoGrupo()" color="secondary">
+      Nuevo
+      <ion-icon name="add-circle-outline" slot="end"></ion-icon>
     </ion-button>
   </div>
-</ion-content>
--->
+
+  <div *ngIf="grupos.length === 0 && !isLoading" class="empty-state">
+    <ion-icon name="people-outline" size="large"></ion-icon>
+    <h3>Aún no tienes grupos</h3>
+    <p>Crea un grupo para comenzar a dividir gastos con amigos</p>
+    <ion-button (click)="nuevoGrupo()" expand="block" color="secondary">
+      Crear mi primer grupo
+    </ion-button>
+  </div>
+
+  <swiper-container *ngIf="grupos.length > 0 && !isLoading"
+                    slides-per-view="1"
+                    centered-slides="true"
+                    space-between="30"
+                    class="grupos-carrusel">
+    <swiper-slide *ngFor="let grupo of grupos">
+      <div class="grupo-carrusel-card" (click)="verDetalleGrupo(grupo.id)">
+        <div class="grupo-carrusel-avatar">
+          <img *ngIf="grupo.imagenUrl; else defaultAvatar" [src]="grupo.imagenUrl" alt="Avatar grupo" />
+          <ng-template #defaultAvatar>
+            <ion-icon name="people-circle-outline" class="avatar-icon"></ion-icon>
+          </ng-template>
+        </div>
+        <div class="grupo-carrusel-body">
+          <h3 class="grupo-carrusel-title">{{ grupo.nombre }}</h3>
+          <span class="grupo-carrusel-fecha">Creado el {{ grupo.fechaCreacion | date:'dd MMM yyyy' }}</span>
+          <p class="grupo-carrusel-desc" *ngIf="grupo.descripcion; else noDesc">{{ grupo.descripcion }}</p>
+          <ng-template #noDesc>
+            <p class="grupo-carrusel-desc no-descripcion">Sin descripción</p>
+          </ng-template>
+        </div>
+        <div class="grupo-carrusel-footer">
+          <ion-button fill="outline" size="small" color="secondary">
+            Ver detalles
+          </ion-button>
+        </div>
+      </div>
+    </swiper-slide>
+  </swiper-container>
+
+  <ng-container *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando grupos...</p>
+  </ng-container>
+</section>
