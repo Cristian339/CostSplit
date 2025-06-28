@@ -33,7 +33,7 @@
   h1 {
     margin: 0;
     font-size: 2.2rem;
-    font-weight: 700;
+    font-weight: 400;
   }
 
   p {
@@ -55,7 +55,7 @@
   h2 {
     margin: 0;
     font-size: 1.2rem;
-    font-weight: 600;
+    font-weight: 400;
   }
 
   p {
@@ -64,8 +64,201 @@
   }
 }
 
+/* NUEVO: Grid principal responsive */
+.main-responsive-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin: 0 auto;
+  max-width: 2000px;
+  padding: 0 12px;
+}
+
+.main-col {
+  width: 100%;
+  align-items: flex-start;
+}
+
+/* Escritorio: dos columnas alineadas arriba */
+@media (min-width: 900px) {
+  .main-responsive-grid {
+    flex-direction: row;
+    gap: 32px;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 500px;
+  }
+  .main-col {
+    width: 50%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .main-col-grupos {
+    > app-grupo-list {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+  }
+  .main-col-acciones {
+    > .acciones-section {
+      width: 100%;
+      max-width: 800px; /* Más ancho aún */
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .actions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 28px;
+      width: 1000px;
+      height: 600px;
+      align-items: center;
+      justify-items: center;
+    }
+    .action-card {
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      aspect-ratio: 2.1/1; /* Más ancha */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 36px 24px 32px 24px;
+      margin: 0;
+      border-radius: 26px;
+      background: white;
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.13);
+      transition:
+        transform 0.22s cubic-bezier(.4,2,.6,1),
+        box-shadow 0.22s cubic-bezier(.4,2,.6,1);
+      cursor: pointer;
+
+      &:hover, &:active, &:focus-visible {
+        transform: scale(1.055) translateY(-3px);
+        box-shadow: 0 12px 36px rgba(0,0,0,0.15);
+        z-index: 2;
+      }
+
+      ion-icon {
+        font-size: 3.8rem;
+        margin-bottom: 22px;
+        color: var(--ion-color-first);
+        transition: color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+      }
+
+      p {
+        margin: 0;
+        font-weight: 500;
+        color: var(--ion-color-first);
+        font-size: 1.45rem;
+        letter-spacing: 0.7px;
+        text-align: center;
+        width: 100%;
+      }
+    }
+  }
+}
+
+/* Móvil: una columna */
+@media (max-width: 899px) {
+  .main-responsive-grid {
+    flex-direction: column;
+    gap: 24px;
+    padding: 0 4px;
+  }
+  .main-col {
+    width: 100%;
+  }
+  .main-col-grupos,
+  .main-col-acciones {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  .actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    height: auto;
+    align-items: center;
+    justify-items: center;
+  }
+  .action-card {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 6px 12px 6px;
+    margin: 0;
+    border-radius: 14px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition:
+      transform 0.18s cubic-bezier(.4,2,.6,1),
+      box-shadow 0.18s cubic-bezier(.4,2,.6,1);
+    cursor: pointer;
+
+    &:hover, &:active, &:focus-visible {
+      transform: scale(1.025) translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.11);
+      z-index: 2;
+    }
+
+    ion-icon {
+      font-size: 2.1rem;
+      margin-bottom: 10px;
+      color: var(--ion-color-first);
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    p {
+      margin: 0;
+      font-weight: 400;
+      color: var(--ion-color-first);
+      font-size: 1rem;
+      letter-spacing: 0.2px;
+      text-align: center;
+      width: 100%;
+    }
+  }
+}
+
+/* Ajustes para la sección de acciones rápidas */
+.acciones-section {
+  padding: 20px 0 0 0;
+  h2 {
+    margin-bottom: 18px;
+    color: var(--ion-color-first);
+    font-size: 2.3rem;
+    font-family: var(--ion-font-family-headers);
+  }
+
+}
+
+/* Resto de estilos existentes para gastos, cards, etc. */
 .section-container {
-  padding: 20px;
+  padding: 0 0 0 0 ;
 
   .section-header {
     display: flex;
@@ -101,174 +294,4 @@
     color: var(--ion-color-secondary);
     margin-bottom: 20px;
   }
-}
-
-.grupos-carousel {
-  width: 100%;
-  height: 220px;
-  padding-bottom: 30px;
-}
-
-.grupo-card {
-  background: linear-gradient(180deg, var(--ion-color-tertiary) 0%, rgba(245, 245, 245, 1) 100%);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 8px 15px rgba(0, 31, 63, 0.1);
-  height: 200px;
-  margin: 10px 0;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-top: 3px solid var(--ion-color-cuaternary);
-
-  &:active {
-    transform: scale(0.98);
-  }
-
-  .grupo-card-header {
-    background-color: var(--ion-color-cuaternary);
-    padding: 8px 15px;
-    font-size: 0.8rem;
-    display: flex;
-    align-items: center;
-    color: var(--ion-color-cuaternary-contrast);
-
-    ion-icon {
-      margin-right: 5px;
-    }
-  }
-
-  ion-card-header {
-    padding-top: 15px;
-    padding-bottom: 5px;
-
-    ion-card-title {
-      font-size: 1.4rem;
-      color: var(--ion-color-first);
-    }
-  }
-
-  ion-card-content {
-    color: var(--ion-color-secondary);
-
-    .no-descripcion {
-      opacity: 0.5;
-      font-style: italic;
-    }
-
-    .card-footer {
-      margin-top: 15px;
-      display: flex;
-      justify-content: flex-start;
-    }
-  }
-}
-
-// Logo styling
-.logo-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  .logo {
-    height: 24px;
-    margin-right: 8px;
-  }
-
-  span {
-    font-weight: 700;
-    letter-spacing: 0.5px;
-  }
-}
-
-// Últimos gastos
-.transparent-card {
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-
-  ion-item {
-    --background: transparent;
-    --border-color: rgba(0, 0, 0, 0.05);
-    margin-bottom: 5px;
-
-    &:last-child {
-      --border-color: transparent;
-    }
-
-    h3 {
-      font-weight: 600;
-      color: var(--ion-color-first);
-    }
-
-    p {
-      font-size: 0.8rem;
-      color: var(--ion-color-secondary);
-    }
-  }
-
-  .gasto-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--ion-color-cuaternary);
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-
-    ion-icon {
-      font-size: 1.2rem;
-      color: var(--ion-color-cuaternary-contrast);
-    }
-  }
-
-  .amount-note {
-    font-weight: 700;
-    color: var(--ion-color-first);
-  }
-}
-
-// Quick actions
-.actions-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-
-  .action-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    margin: 0;
-    border-radius: 12px;
-    background: white;
-    height: 100px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
-    transition: transform 0.2s;
-
-    &:active {
-      transform: scale(0.95);
-    }
-
-    ion-icon {
-      font-size: 2rem;
-      margin-bottom: 10px;
-    }
-
-    p {
-      margin: 0;
-      font-weight: 500;
-      color: var(--ion-color-first);
-    }
-  }
-}
-
-ion-toolbar {
-  --background: var(--ion-color-first);
-  --color: var(--ion-color-tertiary);
-}
-
-// Animación para las cards
-.grupo-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 20px rgba(0, 31, 63, 0.15);
 }

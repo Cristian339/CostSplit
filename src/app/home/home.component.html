@@ -15,17 +15,14 @@
   </div>
 
   <div *ngIf="!isLoading">
-    <!-- Cabecera con saludo -->
     <div class="welcome-container">
       <div class="welcome-text">
         <h1>Hola, {{userName}}</h1>
         <p>¿Qué quieres hacer hoy?</p>
       </div>
-
       <div class="summary-card">
         <div>
           <h2>Resumen</h2>
-          <!-- Si quieres mostrar el número de grupos, hazlo dentro de app-grupo-list -->
         </div>
         <ion-button fill="clear" (click)="verInformes()" color="tertiary">
           Ver informes
@@ -34,16 +31,41 @@
       </div>
     </div>
 
-    <!-- Lista y carrusel de grupos SIEMPRE visible -->
-    <app-grupo-list></app-grupo-list>
+    <!-- NUEVO: Grid responsive para grupos y acciones -->
+    <div class="main-responsive-grid">
+      <div class="main-col main-col-grupos">
+        <app-grupo-list></app-grupo-list>
+      </div>
+      <div class="main-col main-col-acciones">
+        <section class="section-container acciones-section">
+          <h2>Acciones rápidas</h2>
+          <div class="actions-grid">
+            <ion-card button (click)="nuevoGrupo()" class="action-card">
+              <ion-icon name="people-outline" color="first"></ion-icon>
+              <p>Nuevo grupo</p>
+            </ion-card>
+            <ion-card button [routerLink]="['/informes']" class="action-card">
+              <ion-icon name="bar-chart-outline" color="secondary"></ion-icon>
+              <p>Informes</p>
+            </ion-card>
+            <ion-card button [routerLink]="['/amigos']" class="action-card">
+              <ion-icon name="person-outline" color="first"></ion-icon>
+              <p>Mis amigos</p>
+            </ion-card>
+            <ion-card button [routerLink]="['/ayuda']" class="action-card" >
+              <ion-icon name="help-circle-outline" color="secondary"></ion-icon>
+              <p>Ayuda</p>
+            </ion-card>
+          </div>
+        </section>
+      </div>
+    </div>
 
     <!-- Últimos gastos -->
     <section class="section-container" *ngIf="ultimosGastos.length > 0">
       <div class="section-header">
         <h2>Últimos gastos</h2>
-        <!-- Botón "Ver todos" eliminado porque dependía de grupos[0] -->
       </div>
-
       <ion-card class="transparent-card">
         <ion-list lines="none">
           <ion-item *ngFor="let gasto of ultimosGastos">
@@ -59,34 +81,8 @@
         </ion-list>
       </ion-card>
     </section>
-
-    <!-- Acciones rápidas -->
-    <section class="section-container">
-      <h2>Acciones rápidas</h2>
-      <div class="actions-grid">
-        <ion-card button (click)="nuevoGrupo()" class="action-card">
-          <ion-icon name="people-outline" color="first"></ion-icon>
-          <p>Nuevo grupo</p>
-        </ion-card>
-        <ion-card button [routerLink]="['/informes']" class="action-card">
-          <ion-icon name="bar-chart-outline" color="secondary"></ion-icon>
-          <p>Informes</p>
-        </ion-card>
-        <ion-card button [routerLink]="['/amigos']" class="action-card">
-          <ion-icon name="person-outline" color="first"></ion-icon>
-          <p>Mis amigos</p>
-        </ion-card>
-        <ion-card button [routerLink]="['/ayuda']" class="action-card" >
-          <ion-icon name="help-circle-outline" color="secondary"></ion-icon>
-          <p>Ayuda</p>
-        </ion-card>
-      </div>
-    </section>
   </div>
 
-
-
-  <!-- Flotante para crear nuevo grupo -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button color="secondary" (click)="nuevoGrupo()">
       <ion-icon name="add"></ion-icon>

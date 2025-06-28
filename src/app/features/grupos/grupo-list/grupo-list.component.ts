@@ -56,14 +56,28 @@ export class GrupoListComponent implements OnInit {
     this.usuarioService.getUsuarioActualId().subscribe({
       next: (userId) => {
         this.grupoService.listarGrupos(userId).subscribe({
-          next: (grupos) => {
-            this.grupos = Array.isArray(grupos) ? grupos.map((g: any) => ({
-              id: g.id,
-              nombre: g.nombre,
-              descripcion: g.descripcion || '',
-              fechaCreacion: g.fechaCreacion
-            })) : [];
+          next: async (grupos) => {
+            if (!Array.isArray(grupos)) {
+              this.grupos = [];
+              this.isLoading = false;
+              return;
+            }
+            // Verifica cada imagen
+            const gruposConImagenValida = await Promise.all(
+              grupos.map(async (g: any) => {
+                const imagenValida = await this.verificarImagen(g.imagenUrl);
+                return {
+                  id: g.id,
+                  nombre: g.nombre,
+                  imagenUrl: imagenValida ? g.imagenUrl : '',
+                  descripcion: g.descripcion || '',
+                  fechaCreacion: g.fechaCreacion
+                };
+              })
+            );
+            this.grupos = gruposConImagenValida;
             this.isLoading = false;
+            console.log(this.grupos);
           },
           error: (error) => {
             console.error('Error al cargar grupos:', error);
@@ -84,6 +98,15 @@ export class GrupoListComponent implements OnInit {
     });
   }
 
+  private verificarImagen(url: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      if (!url) return resolve(false);
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  }
   doRefresh(event: any) {
     this.cargarGrupos();
     setTimeout(() => {

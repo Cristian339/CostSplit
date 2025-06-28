@@ -17,9 +17,8 @@
   </div>
 
   <swiper-container *ngIf="grupos.length > 0 && !isLoading"
-                    slides-per-view="1"
-                    centered-slides="true"
-                    space-between="30"
+                    effect="cards"
+                    grab-cursor="true"
                     class="grupos-carrusel">
     <swiper-slide *ngFor="let grupo of grupos">
       <div class="grupo-carrusel-card" (click)="verDetalleGrupo(grupo.id)">
