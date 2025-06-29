@@ -67,12 +67,6 @@ export class UsuarioService {
     return this.http.delete<void>(`${this.apiUrl}/${idUsuario}/amigos/${idAmigo}`)
       .pipe(catchError(this.handleError));
   }
-
-  buscarUsuarios(termino: string): Observable<UsuarioDTO[]> {
-    return this.http.get<UsuarioDTO[]>(`${this.apiUrl}/buscar?termino=${termino}`)
-      .pipe(catchError(this.handleError));
-  }
-
   private handleError(error: HttpErrorResponse) {
     console.error('Error en UsuarioService:', error);
     return throwError(() => new Error(`Error en la operación: ${error.message}`));
@@ -81,6 +75,15 @@ export class UsuarioService {
   getUsuarioActualId(): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/me/id`)
       .pipe(catchError(this.handleError));
+  }
+
+  buscarUsuarios(termino: string, idUsuarioActual: number) {
+    // Cambia la URL para que coincida con la del backend
+    return this.http.get<UsuarioDTO[]>(`${this.apiUrl}/buscar`, {
+      params: { termino, idUsuarioActual }
+    }).pipe(
+      catchError(this.handleError)
+    );
   }
 
 

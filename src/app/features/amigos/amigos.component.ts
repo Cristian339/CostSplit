@@ -6,6 +6,10 @@ import { UsuarioService } from '../../services/usuario.service';
 import { UsuarioDTO } from '../../models/usuario.model';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
+import { addIcons } from 'ionicons';
+import {
+  person, personAdd, peopleOutline, trash, searchOutline
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-amigos',
@@ -27,23 +31,30 @@ export class AmigosComponent implements OnInit {
     private toastService: ToastService,
     private alertController: AlertController,
     private loadingController: LoadingController
-  ) { }
-
-  ngOnInit() {
-    this.getCurrentUser();
+  ) {
+    addIcons({
+      person,
+      personAdd,
+      peopleOutline,
+      trash,
+      searchOutline
+    });
   }
 
-  private getCurrentUser() {
-    // Obtenemos el usuario actual directamente del servicio
-    const usuario = this.authService.getCurrentUser();
-
-    if (usuario && usuario.id) {
-      this.currentUserId = usuario.id;
-      this.cargarAmigos();
-    } else {
-      this.toastService.error('Error al cargar información de usuario');
-      console.error('Usuario no disponible o sin ID');
-    }
+  ngOnInit() {
+    this.usuarioService.getUsuarioActualId().subscribe({
+      next: (id) => {
+        if (id) {
+          this.currentUserId = id;
+          this.cargarAmigos();
+        } else {
+          this.toastService.error('Usuario no disponible o sin ID');
+        }
+      },
+      error: () => {
+        this.toastService.error('No se pudo obtener el usuario actual');
+      }
+    });
   }
 
   async cargarAmigos() {
@@ -66,16 +77,15 @@ export class AmigosComponent implements OnInit {
   }
 
   async buscarUsuarios() {
-    if (this.searchTerm.trim().length < 3) {
+    if (this.searchTerm.trim().length < 3 || !this.currentUserId) {
       this.usuariosSugeridos = [];
       return;
     }
 
     const loading = await this.presentLoading('Buscando usuarios...');
 
-    this.usuarioService.buscarUsuarios(this.searchTerm).subscribe({
+    this.usuarioService.buscarUsuarios(this.searchTerm, this.currentUserId).subscribe({
       next: (usuarios) => {
-        // Filtrar usuarios que ya son amigos y el usuario actual
         this.usuariosSugeridos = usuarios.filter(u =>
           u.id !== this.currentUserId &&
           !this.amigos.some(amigo => amigo.id === u.id)

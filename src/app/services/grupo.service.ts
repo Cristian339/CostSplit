@@ -16,7 +16,7 @@ export interface CrearGrupoDTO {
 
 export interface AniadirParticipanteDTO {
   idsUsuarios: number[];
-  // Otros campos si son necesarios
+
 }
 
 
@@ -56,4 +56,6 @@ export class GrupoService {
   subirImagen(formData: FormData): Observable<ImageResponse> {
     return this.http.post<ImageResponse>(`${this.apiUrl}/upload`, formData);
   }
+
+
 }

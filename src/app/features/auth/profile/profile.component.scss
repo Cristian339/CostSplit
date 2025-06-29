@@ -1,68 +1,79 @@
 :host {
-  --profile-primary: var(--ion-color-primary);
-  --profile-primary-shade: var(--ion-color-primary-shade);
+  --profile-primary: var(--ion-color-first);
+  --profile-primary-shade: var(--ion-color-first-shade);
   --profile-secondary: var(--ion-color-secondary);
   --profile-light: var(--ion-color-light);
   --profile-medium: var(--ion-color-medium);
+  --profile-bg-gradient: linear-gradient(135deg, var(--ion-color-cuaternary) 0%, var(--ion-color-tertiary) 100%);
 }
 
-
-/* Clases de animación que usamos, definidas directamente */
-.animate__animated {
-  animation-duration: 1s;
-  animation-fill-mode: both;
+/* Animaciones */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px);}
+  to { opacity: 1; transform: translateY(0);}
 }
-
-.animate__fadeIn {
-  animation-name: fadeIn;
-}
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-
-.animate__pulse {
-  animation-name: pulse;
-  animation-duration: 1s;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
+@keyframes pulse {
+  0% { transform: scale(1);}
+  50% { transform: scale(1.08);}
+  100% { transform: scale(1);}
+}
+@keyframes bounceIn {
+  from { opacity: 0; transform: scale(0.3);}
+  to { opacity: 1; transform: scale(1);}
 }
 
+.animate__animated { animation-duration: 1s; animation-fill-mode: both; }
+.animate__fadeIn { animation-name: fadeIn; }
+.animate__fadeInUp { animation-name: fadeInUp; }
+.animate__pulse { animation: pulse 1s infinite; }
 
-.transparent-toolbar {
-  --background: transparent;
-  --border-color: transparent;
-}
-
+/* Fondo general */
 .profile-content {
-  --background: linear-gradient(135deg, var(--ion-color-light) 0%, var(--ion-color-light-shade) 100%);
+  --background: var(--profile-bg-gradient);
+  min-height: 100vh;
+  padding: 0;
 }
 
+/* Loader */
 .loader-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  height: 100%;
+  justify-content: center;
+  height: 220px;
 
+  ion-spinner {
+    width: 48px;
+    height: 48px;
+  }
   p {
     margin-top: 1rem;
     color: var(--profile-medium);
+    font-size: 1.1rem;
   }
 }
 
+/* Contenedor principal */
 .profile-container {
-  max-width: 600px;
+  max-width: 520px;
   margin: 0 auto;
-  padding-top: 1rem;
+  padding: 2.2rem 1rem 1.5rem 1rem;
+  background: rgba(255,255,255,0.85);
+  border-radius: 28px;
+  box-shadow: 0 6px 32px rgba(0,31,63,0.10);
+  animation: fadeInUp 0.7s;
 }
 
+/* Cabecera de perfil */
 .profile-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 2.2rem;
   animation: fadeIn 0.5s ease;
 }
 
@@ -72,18 +83,26 @@
 }
 
 .profile-avatar {
-  width: 120px;
-  height: 120px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 3px solid var(--profile-primary);
-  transition: all 0.3s ease;
+  width: 130px;
+  height: 130px;
+  box-shadow: 0 4px 18px rgba(0, 31, 63, 0.13);
+  border: 4px solid var(--profile-primary);
+  border-radius: 50%;
+  background: #fff;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
 
   &:hover {
-    transform: scale(1.05);
+    transform: scale(1.06);
+    box-shadow: 0 8px 28px rgba(0,31,63,0.18);
   }
 
   img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    border-radius: 50%;
+    display: block;
   }
 }
 
@@ -91,20 +110,20 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   background: var(--profile-primary);
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 31, 63, 0.18);
   animation: bounceIn 0.5s;
 
   ion-icon {
     color: white;
-    font-size: 20px;
+    font-size: 22px;
   }
 
   &:hover {
@@ -113,49 +132,60 @@
 }
 
 .profile-name {
-  margin: 1rem 0 0.2rem;
-  font-weight: 600;
-  font-size: 1.8rem;
-  color: var(--ion-color-dark);
+  margin: 1.2rem 0 0.3rem;
+  font-weight: 700;
+  font-size: 2.1rem;
+  color: var(--profile-primary);
   text-align: center;
+  font-family: var(--ion-font-family-headers);
+  letter-spacing: 1px;
 }
 
 .profile-email {
   margin: 0;
   color: var(--profile-medium);
-  font-size: 1rem;
+  font-size: 1.08rem;
+  text-align: center;
+  opacity: 0.85;
 }
 
+/* Cards */
 ion-card {
-  border-radius: 15px;
-  margin-bottom: 1.2rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  background: white;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 18px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 18px rgba(0, 31, 63, 0.09);
+  background: rgba(255,255,255,0.97);
+  transition: transform 0.22s, box-shadow 0.22s;
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 8px 28px rgba(0, 31, 63, 0.13);
   }
 
   ion-card-header {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0, 31, 63, 0.06);
+    padding-bottom: 0.5rem;
   }
 
   ion-card-title {
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: 1.3rem;
+    font-weight: 700;
     color: var(--profile-primary);
+    font-family: var(--ion-font-family-headers);
+    letter-spacing: 0.5px;
   }
 }
 
+/* Formulario */
 .form-item {
   --padding-start: 0;
   --inner-padding-end: 0;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 
   ion-label {
     color: var(--profile-medium);
+    font-size: 1.05rem;
+    font-weight: 500;
   }
 
   ion-input {
@@ -164,6 +194,7 @@ ion-card {
     --background: var(--profile-light);
     margin-top: 4px;
     --color: var(--ion-color-dark);
+    font-size: 1.08rem;
 
     &:focus {
       --background: rgba(var(--ion-color-primary-rgb), 0.05);
@@ -171,23 +202,32 @@ ion-card {
   }
 }
 
+/* Botones */
 .save-button-container {
-  margin-top: 1rem;
+  margin-top: 1.2rem;
   animation: fadeInUp 0.5s;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .save-button {
-  --box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.4);
-  transition: all 0.2s ease;
+  --box-shadow: 0 4px 12px rgba(var(--ion-color-first-rgb), 0.25);
+  --background: var(--profile-primary);
+  --color: #fff;
+  --border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.13rem;
+  letter-spacing: 0.5px;
+  transition: transform 0.18s, box-shadow 0.18s;
 
   &:hover:not(.button-disabled) {
-    transform: translateY(-2px);
-    --box-shadow: 0 6px 16px rgba(var(--ion-color-primary-rgb), 0.5);
+    transform: translateY(-2px) scale(1.03);
+    --box-shadow: 0 8px 24px rgba(var(--ion-color-first-rgb), 0.32);
   }
 }
 
 .security-card {
-  margin-top: 1rem;
+  margin-top: 1.2rem;
 }
 
 .password-button {
@@ -196,7 +236,7 @@ ion-card {
   margin-top: 0.5rem;
 
   &:hover {
-    --background: rgba(var(--ion-color-primary-rgb), 0.05);
+    --background: rgba(var(--ion-color-first-rgb), 0.07);
   }
 }
 
@@ -230,30 +270,71 @@ ion-card {
   }
 }
 
-/* Animaciones adicionales */
-@keyframes pulse {
-  0% {
-    transform: scale(1);
+/* Responsive */
+@media (min-width: 900px) {
+  .profile-container {
+    max-width: 600px;
+    padding: 3.5rem 2.5rem 2.5rem 2.5rem;
+    border-radius: 38px;
   }
-  50% {
-    transform: scale(1.1);
+  .profile-avatar {
+    width: 160px;
+    height: 160px;
   }
-  100% {
-    transform: scale(1);
+  .avatar-edit-button {
+    width: 54px;
+    height: 54px;
+    font-size: 1.3rem;
+  }
+  .profile-name {
+    font-size: 2.6rem;
+  }
+  .profile-email {
+    font-size: 1.18rem;
+  }
+  ion-card {
+    border-radius: 26px;
+    margin-bottom: 2.2rem;
+  }
+  ion-card-title {
+    font-size: 1.5rem;
+  }
+  .save-button {
+    font-size: 1.18rem;
+    min-width: 180px;
   }
 }
 
-.animate__pulse {
-  animation: pulse 1s infinite;
-}
-
-@keyframes bounceIn {
-  from {
-    opacity: 0;
-    transform: scale(0.3);
+@media (max-width: 899px) {
+  .profile-container {
+    max-width: 98vw;
+    padding: 1.2rem 0.3rem 1.2rem 0.3rem;
+    border-radius: 16px;
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+  .profile-avatar {
+    width: 90px;
+    height: 90px;
+  }
+  .avatar-edit-button {
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
+  }
+  .profile-name {
+    font-size: 1.4rem;
+  }
+  .profile-email {
+    font-size: 0.98rem;
+  }
+  ion-card {
+    border-radius: 12px;
+    margin-bottom: 1rem;
+  }
+  ion-card-title {
+    font-size: 1.08rem;
+  }
+  .save-button {
+    font-size: 1rem;
+    min-width: 100px;
   }
 }
