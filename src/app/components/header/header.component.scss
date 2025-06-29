@@ -14,13 +14,14 @@ ion-toolbar {
   padding: 8px 0;
 }
 
+/* Estilos base (móvil) */
 .logo-container {
   display: flex;
   align-items: center;
   gap: 12px;
 
   .logo {
-    height: 48px; /* Aumentado de 36px */
+    height: 60px;
     width: auto;
     transition: transform 0.3s ease;
 
@@ -34,15 +35,15 @@ ion-toolbar {
     flex-direction: column;
 
     .app-name {
-      font-weight: 700;
-      font-size: 22px; /* Aumentado de 18px */
-      color: #ffffff; /* Cambiado a blanco puro para mejor visibilidad */
+      font-weight: 400;
+      font-size: 28px;
+      color: #ffffff;
       margin: 0;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Añadido para mejor legibilidad */
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
     }
 
     .app-slogan {
-      font-size: 12px;
+      font-size: 16px;
       color: rgba(255, 255, 255, 0.7);
       display: none;
 
@@ -62,9 +63,9 @@ ion-buttons {
 
 .profile-btn {
   ion-avatar {
-    width: 42px; /* Aumentado de 32px */
-    height: 42px; /* Aumentado de 32px */
-    border: 2px solid var(--ion-color-light);
+    width: 70px;
+    height: 70px;
+    border: 3px solid var(--ion-color-light);
     transition: transform 0.2s ease, border-color 0.2s ease;
 
     &:hover {
@@ -78,8 +79,8 @@ ion-buttons {
   position: relative;
 
   ion-icon {
-    font-size: 28px; /* Aumentado de 24px */
-    color: var(--ion-color-light);
+    font-size: 32px;
+    color: #fff; // Blanco
   }
 
   .badge {
@@ -89,9 +90,9 @@ ion-buttons {
     background-color: var(--ion-color-secondary);
     color: white;
     border-radius: 50%;
-    width: 18px; /* Aumentado de 16px */
-    height: 18px; /* Aumentado de 16px */
-    font-size: 10px;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -103,4 +104,84 @@ ion-buttons {
   0% { transform: scale(1); }
   50% { transform: scale(1.2); }
   100% { transform: scale(1); }
+}
+
+/* Escritorio: ajustes */
+@media (min-width: 900px) {
+  .logo-container {
+    gap: 32px;
+
+    .logo {
+      height: 140px; // Más grande en ordenador
+    }
+
+    .title-text {
+      .app-name {
+        font-size: 32px; // Un poco más pequeño que antes
+      }
+      .app-slogan {
+        font-size: 18px; // Un poco más pequeño que antes
+      }
+    }
+  }
+
+  .profile-btn {
+    ion-avatar {
+      width: 80px; // Más pequeño que antes
+      height: 80px;
+      border-width: 3px;
+    }
+  }
+
+  .notification-icon {
+    ion-icon {
+      font-size: 44px;
+      color: #fff; // Blanco
+    }
+    .badge {
+      width: 28px;
+      height: 28px;
+      font-size: 16px;
+    }
+  }
+}
+
+/* Móvil: tamaños base */
+@media (max-width: 899px) {
+  .logo-container {
+    gap: 12px;
+
+    .logo {
+      height: 80px;
+    }
+
+    .title-text {
+      .app-name {
+        font-size: 28px;
+      }
+      .app-slogan {
+        font-size: 16px;
+      }
+    }
+  }
+
+  .profile-btn {
+    ion-avatar {
+      width: 64px;
+      height: 64px;
+      border-width: 3px;
+    }
+  }
+
+  .notification-icon {
+    ion-icon {
+      font-size: 32px;
+      color: #fff; // Blanco
+    }
+    .badge {
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+    }
+  }
 }

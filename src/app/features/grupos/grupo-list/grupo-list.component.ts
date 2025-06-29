@@ -9,7 +9,7 @@ import { ToastService } from '../../../services/toast.service';
 import { UsuarioService } from '../../../services/usuario.service'; // Asegúrate de que la ruta es correcta
 import { addIcons } from 'ionicons';
 import {
-  peopleOutline,addCircleOutline,peopleCircleOutline
+  peopleOutline,peopleCircleOutline
 } from 'ionicons/icons';
 @Component({
   selector: 'app-grupo-list',
